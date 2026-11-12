@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prueba de componentes</title>
+
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <link rel="stylesheet" href="/assets/styles/main.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+        }
+
+        section {
+            display: grid;
+            gap: 24px;
+            padding: 40px 32px;
+        }
+
+        section>* {
+            max-width: 420px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        .oscuro {
+            background: #3F3F3F;
+            color: #fff;
+        }
+
+        .claro {
+            background: var(--fondo-pagina-input);
+        }
+
+        .crema {
+            background: var(--primario-segundo-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="oscuro">
+        <h2>Test visual de CheckBox</h2>
+        <h3>Checkbox Normal</h3>
+        <div><input is="custom-checkbox" label="Recordarme"></div>
+        <h3>Checkbox marcado con la palomita</h3>
+        <div><input is="custom-checkbox" label="Recordarme" checked></div>
+        <h3>Checkbox deshabilitado</h3>
+        <div><input is="custom-checkbox" label="Deshabilitado" disabled></div>
+    </section>
+
+    <section class="claro">
+        <h2>Test visual de Text</h2>
+        <h3>Text normal</h3>
+        <input is="custom-text">
+        <h3>Text con texto adentro</h3>
+        <input is="custom-text" label="Nombre" placeholder="Escribe tu nombre">
+        <h3>Text con error</h3>
+        <input is="custom-text" type="password" label="Contraseña" error="Mínimo 8 caracteres">
+        <h3>Text deshabilitado</h3>
+        <input is="custom-text" label="Deshabilitado" value="No se puede editar" disabled>
+    </section>
+
+    <section class="crema">
+        <h2>SpinnerNumerico</h2>
+        <h3>Spinner normal</h3>
+        <input is="custom-spinner-numerico" id="spinner-cantidad">
+        <h3>Spinner con valor inicial, mínimo 0 y máximo 5, se bloquea hasta llegar a 5, y bloquea no poder poner menos
+            de 0</h3>
+        <input is="custom-spinner-numerico" min="0" max="5" value="3">
+        <h3>Spinner deshabilitado</h3>
+        <input is="custom-spinner-numerico" value="2" disabled>
+    </section>
+
+    <!-- Carga los componentes: trae el HTML de cada plantilla y lo inserta en la página -->
+    <script type="module">
+        const componentes = [
+            '/boundary/components/text/text.html',
+            '/boundary/components/checkbox/checkbox.html',
+            '/boundary/components/spinnerNumerico/spinnerNumerico.html',
+        ];
+
+        for (const ruta of componentes) {
+            const respuesta = await fetch(ruta);
+            const html = await respuesta.text();
+            document.body.append(document.createRange().createContextualFragment(html));
+        }
+
+        // Solo para la prueba: muestra que el spinner avisa cuando cambia su valor
+        const spinner = document.getElementById('spinner-cantidad');
+        const texto = document.getElementById('valor-spinner');
+        spinner.addEventListener('change', () => {
+            texto.textContent = `Valor del primero: ${spinner.value}`;
+        });
+    </script>
+
+</body>
+
+</html>
