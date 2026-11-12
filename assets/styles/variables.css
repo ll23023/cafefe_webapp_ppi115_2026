@@ -1,0 +1,41 @@
+:root {
+
+    /*La barra que esta arriba, y para la barra de abajo*/
+    --barra: #3F1D0E;
+    /*Son los circulos que trataremos como carrusel donde estaran bebidas, comida, perecedero, etc
+    ademas este color es usado para la barra donde esta el carrito de compras
+    */
+    --carrusel-filter: #D6AA97;
+    /*El fondo de color de toda la pagina, parece blanco pero NO es blanco*/
+    --fondo-pagina-color: #FEFBF8;
+    /*Es el color que va en medio de la pagina ya sea para cards, itemn, ordenes*/
+    --primario-primer-color: #B79970;
+    /*Es el color que en medio de la pagina, pero va intercalado con el primario-primer-color*/
+    --primario-segundo-color: #D8C3A6;
+    /*Este color no solo se usa para el spinner sino tambien para cualquier linea vertical o horizontal del diseño donde se ve que es solo literalmente una linea
+    este color se usa para el growl de fallo unicamente, el de la linea de growl exito no*/
+    --spinner-lineas-growl2: #FBF7F4;
+    /*Para cualquier boton que sea para eliminar algo*/
+    --eliminar: #AE303B;
+    /*Para los botones volver (redirige a lo anterior)*/
+    --deshacer-volver: #F8F3E9;
+    /*Para el ESTADO: completar despachar o cuando algo esta listo*/
+    --estado-completo: #A8B89F;
+    /*El color del circulo del carrito de compra del componente floatbutton*/
+    --floatbutton-carrito-compra: #8D8961;
+    /*Es el color de todos los encabezado de una orden*/
+    --encabezado-orden: #F1E4CC;
+    /*Para el ESTADO: pendiente de cualquier cosa*/
+    --estado-pendiente: #C9C2B6;
+    /*Para el boton de metodo de pago y boton calcular*/
+    --metodo-pago-Ycalcular: #836871;
+    /*Growl de mensaje exitoso, el 1 es el color de todo el fondo de ese componente
+    el 2 es la linea horizontal que le hace juego al 1*/
+    --Growl-exitoso1: #FAFAF7;
+    --Growl-exitoso2: #D6EBF3;
+    /*Growl de mensaje fallo, el 1 es el color de todo el fondo de ese componente
+    el 2 es la linea horizontal que le hace juego al 1*/
+    --Growl-fallo1: #F0A065;
+    
+
+}
