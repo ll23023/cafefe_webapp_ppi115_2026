@@ -1,0 +1,98 @@
+/*
+  Contenedor de las notificaciones. Se fija en la esquina superior derecha de la ventana
+  y apila los avisos en vertical, de modo que no se superpongan entre sí.
+*/
+.notificaciones {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: grid;
+  gap: 10px;
+  width: min(24rem, calc(100% - 32px));
+}
+
+/*
+  Contenedor principal. La notificación ocupa el ancho de su contenedor sin exceder
+  el ancho máximo definido. Su ubicación en la página corresponde al contenedor que la aloje.
+*/
+custom-notificacion {
+  --notificacion-radio: 10px;
+  --notificacion-ancho-maximo: 24rem;
+
+  /* Variante exito (predeterminada) */
+  --notificacion-fondo: var(--Growl-exitoso1);
+  --notificacion-barra: var(--Growl-exitoso2);
+
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--notificacion-ancho-maximo);
+  padding: 1rem 2.5rem 1.5rem 1rem;
+  background: var(--notificacion-fondo);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: var(--notificacion-radio);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Variante fracaso */
+custom-notificacion[tipo="fracaso"] {
+  --notificacion-fondo: var(--Growl-fallo1);
+  --notificacion-barra: var(--spinner-lineas-growl2);
+}
+
+.notificacion__texto {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.notificacion__cerrar {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.625rem;
+  padding: 0.25rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000000;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.notificacion__cerrar:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+/*
+  Barra temporizadora. Su ancho se reduce de forma lineal durante el tiempo configurado
+  en --notificacion-duracion (definida desde JavaScript). Al finalizar la animación,
+  el componente retira el aviso.
+*/
+.notificacion__temporizador {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 3px;
+  background: var(--notificacion-barra);
+  border-radius: 2px;
+  transform-origin: left center;
+  animation: notificacion-temporizador var(--notificacion-duracion, 5000ms) linear forwards;
+}
+
+/* El temporizador se detiene mientras el usuario interactúa con el aviso. */
+custom-notificacion:hover .notificacion__temporizador,
+custom-notificacion:focus-within .notificacion__temporizador {
+  animation-play-state: paused;
+}
+
+@keyframes notificacion-temporizador {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
