@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prueba de botonFlotante</title>
+
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <link rel="stylesheet" href="/assets/styles/main.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: var(--fondo-pagina-input);
+        }
+
+        /*
+      Escenario de prueba: el botón es de posición absoluta, por lo que requiere un
+      ancestro con position: relative. Las franjas de color permiten observar
+      la transparencia del botón.
+    */
+        .escenario {
+            position: relative;
+            height: 180px;
+            margin: 40px 16px;
+            background:
+                linear-gradient(90deg, transparent 12%, var(--primario-segundo-color) 12% 62%, transparent 62%),
+                var(--fondo-pagina-input);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="escenario">
+        <button is="custom-boton-flotante" texto="Ver carrito"></button>
+    </div>
+
+    <div class="escenario">
+        <button is="custom-boton-flotante" texto="3 productos - $12.50"></button>
+    </div>
+
+    <script type="module">
+        const ruta = '/boundary/components/botonFlotante/botonFlotante.html';
+        const respuesta = await fetch(ruta);
+        const html = await respuesta.text();
+        document.body.append(document.createRange().createContextualFragment(html));
+    </script>
+
+</body>
+
+</html>
