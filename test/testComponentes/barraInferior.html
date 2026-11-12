@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba de barraInferior</title>
+
+  <link rel="stylesheet" href="/assets/styles/variables.css">
+  <link rel="stylesheet" href="/assets/styles/main.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--fondo-pagina-input);
+    }
+
+    .orden {
+      display: grid;
+      gap: 8px;
+      width: min(36rem, calc(100% - 32px));
+      margin: 40px auto;
+    }
+
+    .orden__encabezado {
+      padding: 10px 14px;
+      font-weight: 700;
+      background: var(--encabezado-orden);
+    }
+
+    .orden__fila { height: 3.5rem; }
+    .orden__fila:nth-of-type(odd)  { background: var(--primario-primer-color); }
+    .orden__fila:nth-of-type(even) { background: var(--primario-segundo-color); }
+
+    #registro { margin: 0; font-size: 0.9rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+  <main class="orden">
+    <div class="orden__encabezado">Orden 4hu34-34hi-34hu34-67sdf</div>
+    <div class="orden__fila"></div>
+    <div class="orden__fila"></div>
+    <div class="orden__fila"></div>
+    <div class="orden__fila"></div>
+
+    <custom-barra-inferior
+      texto="$25.00"
+      texto-secundario="Seguir comprando"
+      texto-primario="Completar orden">
+    </custom-barra-inferior>
+
+    <p id="registro">Sin clics todavía</p>
+  </main>
+
+  <!-- Carga los componentes: botonRedondo primero, porque barraInferior lo utiliza -->
+  <script type="module">
+    const componentes = [
+      '/boundary/components/botonRedondo/botonRedondo.html',
+      '/boundary/components/barraInferior/barraInferior.html',
+    ];
+
+    for (const ruta of componentes) {
+      const respuesta = await fetch(ruta);
+      const html = await respuesta.text();
+      document.body.append(document.createRange().createContextualFragment(html));
+    }
+
+    // Solo para la prueba: muestra qué botón de la barra fue presionado
+    const registro = document.getElementById('registro');
+    document.addEventListener('click', (evento) => {
+      const boton = evento.target.closest('button[is="custom-boton-redondo"]');
+      if (boton) registro.textContent = `Clic en: ${boton.getAttribute('texto')} (${boton.getAttribute('tipo')})`;
+    });
+  </script>
+
+</body>
+</html>
