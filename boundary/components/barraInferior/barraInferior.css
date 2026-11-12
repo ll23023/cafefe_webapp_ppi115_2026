@@ -1,0 +1,22 @@
+custom-barra-inferior {
+  --barra-inferior-ancho-maximo: 36rem;
+  --barra-inferior-radio: 12px;
+
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: var(--barra-inferior-ancho-maximo);
+  padding: 0.5rem 0.625rem 0.5rem 1.5rem;
+  background: var(--barra);
+  border-radius: var(--barra-inferior-radio);
+}
+
+.barra-inferior__texto {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}

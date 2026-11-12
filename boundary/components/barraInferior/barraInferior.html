@@ -1,0 +1,18 @@
+<!--
+  Este componente requiere que el componente custom-boton-redondo esté cargado.
+-->
+<link rel="stylesheet" href="/boundary/components/barraInferior/barraInferior.css">
+
+<!--
+  Contenido interno de la barra:
+    - <p>: texto variable (por ejemplo, el total de la compra).
+    - Botón secundario (RoundButton - Secondary).
+    - Botón primario (RoundButton - Primary).
+-->
+<template id="custom-barra-inferior-template">
+  <p class="barra-inferior__texto"></p>
+  <button is="custom-boton-redondo" tipo="secondary"></button>
+  <button is="custom-boton-redondo" tipo="primary"></button>
+</template>
+
+<script src="/boundary/components/barraInferior/barraInferior.js"></script>
