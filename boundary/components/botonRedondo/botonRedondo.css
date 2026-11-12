@@ -1,0 +1,46 @@
+button[is="custom-boton-redondo"] {
+  --boton-redondo-radio: 12px;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.5rem 1.5rem;
+  font: inherit;
+  font-size: 1.125rem;
+  color: #000000;
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--estado-completo);
+  border: none;
+  border-radius: var(--boton-redondo-radio);
+}
+
+button[is="custom-boton-redondo"][tipo="secondary"] {
+  background: var(--deshacer-volver);
+}
+
+button[is="custom-boton-redondo"]:hover {
+  filter: brightness(0.96);
+}
+
+button[is="custom-boton-redondo"]:active {
+  transform: translateY(1px);
+}
+
+button[is="custom-boton-redondo"]:focus-visible {
+  outline: 2px solid var(--barra);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #FFFFFF;
+}
+
+button[is="custom-boton-redondo"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Texto del botón */
+.boton-redondo__texto {
+  margin: 0;
+}
