@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba de notificacion</title>
+
+  <link rel="stylesheet" href="/assets/styles/variables.css">
+  <link rel="stylesheet" href="/assets/styles/main.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--fondo-pagina-input);
+    }
+
+    .acciones {
+      display: flex;
+      gap: 12px;
+      width: min(32rem, calc(100% - 32px));
+      margin: 40px auto 0;
+    }
+
+    .acciones button { padding: 0.6rem 1rem; font: inherit; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- Crean avisos nuevos por código, con la duración predeterminada (5 segundos) -->
+  <div class="acciones">
+    <button type="button" id="mostrar-exito">Mostrar éxito</button>
+    <button type="button" id="mostrar-fracaso">Mostrar fracaso</button>
+  </div>
+
+  <!-- Carga el componente: obtiene el HTML de la plantilla y lo inserta en la página -->
+  <script type="module">
+    const respuesta = await fetch('/boundary/components/notificacion/notificacion.html');
+    const html = await respuesta.text();
+    document.body.append(document.createRange().createContextualFragment(html));
+
+    // Solo para la prueba: genera avisos nuevos dentro del contenedor que trae el componente
+    const avisos = document.querySelector('.notificaciones');
+
+    function mostrar(tipo, texto, duracion) {
+      const aviso = document.createElement('custom-notificacion');
+      aviso.tipo = tipo;
+      aviso.texto = texto;
+      if (duracion) aviso.duracion = duracion;
+      avisos.append(aviso);
+    }
+
+    document.getElementById('mostrar-exito').addEventListener('click', () => mostrar('exito', 'Pago realizado exitosamente'));
+    document.getElementById('mostrar-fracaso').addEventListener('click', () => mostrar('fracaso', 'No se pudo realizar el pago'));
+
+    // Al cargar la página se muestran ambas variantes con duración larga, para poder observarlas
+    mostrar('exito', 'Pago realizado exitosamente', 20000);
+    mostrar('fracaso', 'No se pudo realizar el pago', 20000);
+  </script>
+
+</body>
+</html>
