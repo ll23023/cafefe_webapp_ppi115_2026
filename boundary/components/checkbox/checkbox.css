@@ -1,0 +1,62 @@
+input[is="custom-checkbox"] {
+  --custom-checkbox-color: #FFFFFF;
+  --custom-checkbox-tamano: 1.75rem;
+  --custom-checkbox-borde: 2px;
+  --custom-checkbox-radio: 6px;
+
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-content: center;
+  vertical-align: middle;
+  width: var(--custom-checkbox-tamano);
+  height: var(--custom-checkbox-tamano);
+  margin: 0;
+  background: transparent;
+  border: var(--custom-checkbox-borde) solid var(--custom-checkbox-color);
+  border-radius: var(--custom-checkbox-radio);
+  cursor: pointer;
+}
+
+/* La palomita */
+input[is="custom-checkbox"]::after {
+  content: '';
+  width: 0.85rem;
+  height: 0.45rem;
+  border-left: 3px solid var(--custom-checkbox-color);
+  border-bottom: 3px solid var(--custom-checkbox-color);
+  transform: translateY(-2px) rotate(-45deg);
+  opacity: 0;
+}
+
+input[is="custom-checkbox"]:checked::after {
+  opacity: 1;
+}
+
+input[is="custom-checkbox"]:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+/* El texto */
+.custom-checkbox__label {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 14px;
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox__label[hidden] {
+  display: none;
+}
+
+/* Deshabilitado */
+input[is="custom-checkbox"]:disabled,
+input[is="custom-checkbox"]:disabled + .custom-checkbox__label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

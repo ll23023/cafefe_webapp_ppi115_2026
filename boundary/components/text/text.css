@@ -1,0 +1,66 @@
+input[is="custom-text"] {
+  --custom-text-borde: #000000;
+  --custom-text-radio: 14px;
+  --custom-text-error: #dc2626;
+
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 16px;
+  font: inherit;
+  color: #000000;
+
+  /* Fondo: viene de assets/styles/variables.css */
+  background: var(--fondo-pagina-input);
+
+  /* Borde negro semiredondeado */
+  border: 2px solid var(--custom-text-borde);
+  border-radius: var(--custom-text-radio);
+  outline: none;
+}
+
+input[is="custom-text"]::placeholder {
+  color: #6b7280;
+}
+
+input[is="custom-text"]:focus {
+  box-shadow: 0 0 0 1px var(--custom-text-borde);
+}
+
+input[is="custom-text"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.custom-text__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.custom-text__message {
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+/* Si el atributo hidden no se respeta por el display de arriba */
+.custom-text__label[hidden],
+.custom-text__message[hidden] {
+  display: none;
+}
+
+/* Estado de error */
+input[is="custom-text"].custom-text--error {
+  border-color: #dc2626;
+}
+
+input[is="custom-text"].custom-text--error:focus {
+  box-shadow: 0 0 0 1px #dc2626;
+}
+
+.custom-text--error + .custom-text__message {
+  color: #dc2626;
+}

@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="/boundary/components/spinnerNumerico/spinnerNumerico.css">
+
+<!-- Un <input> no puede tener hijos, así que la plantilla trae la caja con los botones
+     y un hueco al centro (custom-spinner__campo) donde el JS coloca el input -->
+<template id="custom-spinner-numerico-template">
+  <div class="custom-spinner">
+    <button type="button" class="custom-spinner__boton custom-spinner__boton--menos" aria-label="Disminuir">−</button>
+    <span class="custom-spinner__campo"></span>
+    <button type="button" class="custom-spinner__boton custom-spinner__boton--mas" aria-label="Aumentar">+</button>
+  </div>
+</template>
+
+<script src="/boundary/components/spinnerNumerico/spinnerNumerico.js"></script>

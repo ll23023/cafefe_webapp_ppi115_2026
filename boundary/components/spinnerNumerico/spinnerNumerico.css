@@ -1,0 +1,78 @@
+/* La caja rectangular con esquinas semiredondeadas */
+.custom-spinner {
+  --custom-spinner-ancho: 210px;
+  --custom-spinner-radio: 16px;
+  --custom-spinner-color: #000000;
+
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: var(--custom-spinner-ancho);
+  padding: 10px 16px;
+
+  /* Fondo: viene de assets/styles/variables.css */
+  background: var(--spinner-lineas-growl2);
+  border-radius: var(--custom-spinner-radio);
+}
+
+.custom-spinner:focus-within {
+  box-shadow: 0 0 0 2px var(--custom-spinner-color);
+}
+
+/* Los signos − y + */
+.custom-spinner__boton {
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--custom-spinner-color);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-spinner__boton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.custom-spinner__campo {
+  flex: 1;
+  min-width: 0;
+}
+
+/* El input queda en el centro, sin borde ni fondo propio */
+input[is="custom-spinner-numerico"] {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  font-size: 1.25rem;
+  text-align: center;
+  color: var(--custom-spinner-color);
+  background: transparent;
+  border: none;
+  outline: none;
+
+  /* Quita las flechitas nativas del input numérico */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[is="custom-spinner-numerico"]::-webkit-inner-spin-button,
+input[is="custom-spinner-numerico"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[is="custom-spinner-numerico"]:disabled {
+  opacity: 0.5;
+}

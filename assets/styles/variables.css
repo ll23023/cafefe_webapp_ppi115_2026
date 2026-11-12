@@ -6,8 +6,9 @@
     ademas este color es usado para la barra donde esta el carrito de compras
     */
     --carrusel-filter: #D6AA97;
-    /*El fondo de color de toda la pagina, parece blanco pero NO es blanco*/
-    --fondo-pagina-color: #FEFBF8;
+    /*El fondo de color de toda la pagina, parece blanco pero NO es blanco
+    se usa para los input tambien*/
+    --fondo-pagina-input: #FEFBF8;
     /*Es el color que va en medio de la pagina ya sea para cards, itemn, ordenes*/
     --primario-primer-color: #B79970;
     /*Es el color que en medio de la pagina, pero va intercalado con el primario-primer-color*/
@@ -34,8 +35,7 @@
     --Growl-exitoso1: #FAFAF7;
     --Growl-exitoso2: #D6EBF3;
     /*Growl de mensaje fallo, el 1 es el color de todo el fondo de ese componente
-    el 2 es la linea horizontal que le hace juego al 1*/
+    el 2 es la linea horizontal que le hace juego al 1
+    tambien usar para cualquier cosa que se de a entender error*/
     --Growl-fallo1: #F0A065;
-    
-
-}
+    }
