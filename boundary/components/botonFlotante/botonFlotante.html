@@ -1,0 +1,18 @@
+<!--
+  La hoja de estilos se declara fuera del <template> para que se cargue una sola vez
+  en el documento, sin importar cuántas instancias del componente existan.
+-->
+<link rel="stylesheet" href="/boundary/components/botonFlotante/botonFlotante.css">
+
+<!--
+  Contenido interno del botón. Admite elementos hijos, por lo que la estructura completa
+   se inserta dentro de él:
+-->
+<template id="custom-boton-flotante-template">
+  <div class="boton-flotante__icono">
+    <img class="boton-flotante__imagen" src="/assets/icons/CarritoCompra.png" alt="Carrito de compra">
+  </div>
+  <p class="boton-flotante__texto"></p>
+</template>
+ 
+<script src="/boundary/components/botonFlotante/botonFlotante.js"></script>

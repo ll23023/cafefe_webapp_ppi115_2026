@@ -1,0 +1,84 @@
+/* Contenedor principal */
+button[is="custom-boton-flotante"] {
+  /* Parámetros de apariencia y ubicación, modificables desde el exterior. */
+  --boton-flotante-radio: 20px;
+  --boton-flotante-opacidad: 70%;
+  --boton-flotante-ancho: 30rem;
+  --boton-flotante-derecha: 16px;
+  --boton-flotante-abajo: 16px;
+
+  /* Posición absoluta respecto al ancestro posicionado más cercano. */
+  position: absolute;
+  right: var(--boton-flotante-derecha);
+  bottom: var(--boton-flotante-abajo);
+  width: min(var(--boton-flotante-ancho), calc(100% - 2 * var(--boton-flotante-derecha)));
+
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 4.5rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+  font: inherit;
+  color: var(--barra);
+  text-align: left;
+  cursor: pointer;
+
+  /* Fondo translúcido, de modo que el contenido subyacente permanezca visible. */
+  background: color-mix(in srgb, var(--carrusel-filter) var(--boton-flotante-opacidad), transparent);
+
+  /* Esquinas semiredondeadas y sombra perimetral. */
+  border: none;
+  border-radius: var(--boton-flotante-radio);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+button[is="custom-boton-flotante"]:focus-visible {
+  outline: 2px solid var(--barra);
+  outline-offset: 3px;
+}
+
+button[is="custom-boton-flotante"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/*
+  Círculo que contiene el icono. El centrado se resuelve con flexbox en ambos ejes.
+  El diámetro se modifica mediante la variable --boton-flotante-circulo.
+*/
+.boton-flotante__icono {
+  --boton-flotante-circulo: 3.5rem;
+  --boton-flotante-icono: 68%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--boton-flotante-circulo);
+  height: var(--boton-flotante-circulo);
+  background: var(--floatbutton-carrito-compra);
+  border-radius: 50%;
+}
+
+.boton-flotante__imagen {
+  display: block;
+  flex: none;
+  width: var(--boton-flotante-icono);
+  height: var(--boton-flotante-icono);
+  object-fit: contain;
+}
+
+/* Texto variable */
+.boton-flotante__texto {
+  flex: 1;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* El atributo hidden no prevalece sobre las reglas de display, por lo que se declara de forma explícita. */
+.boton-flotante__texto[hidden] {
+  display: none;
+}
