@@ -1,0 +1,58 @@
+custom-menu-flotante {
+  --menu-flotante-ancho: 18rem;
+  --menu-flotante-radio: 14px;
+  --menu-flotante-arriba: 4rem;
+  --menu-flotante-derecha: 1rem;
+  --menu-flotante-boton: #D9D9D9;
+
+  position: absolute;
+  top: var(--menu-flotante-arriba);
+  right: var(--menu-flotante-derecha);
+  z-index: 100;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--menu-flotante-ancho), calc(100% - 2 * var(--menu-flotante-derecha)));
+  min-height: 7.5rem;
+  padding: 0.875rem 1rem 1rem;
+  background: var(--spinner-lineas-growl2);
+  border-radius: var(--menu-flotante-radio);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.menu-flotante__saludo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.menu-flotante__linea {
+  height: 0;
+  margin: 0.5rem 0 1rem;
+  border: none;
+  border-top: 1px solid #000000;
+}
+
+.menu-flotante__boton {
+  align-self: flex-end;
+  margin-top: auto;
+  padding: 0.25rem 1.5rem;
+  font: inherit;
+  font-size: 1rem;
+  color: #000000;
+  cursor: pointer;
+  background: var(--menu-flotante-boton);
+  border: none;
+  border-radius: 6px;
+}
+
+.menu-flotante__boton:hover {
+  filter: brightness(0.95);
+}
+
+.menu-flotante__boton:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
