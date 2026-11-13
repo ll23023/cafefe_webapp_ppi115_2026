@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba de menuFlotante</title>
+
+  <link rel="stylesheet" href="/assets/styles/variables.css">
+  <link rel="stylesheet" href="/assets/styles/main.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--fondo-pagina-input);
+    }
+
+    /*
+      Escenario de prueba: el menú es de posición absoluta, por lo que requiere un
+      ancestro con position: relative. La cabecera simula la barra superior de la página.
+    */
+    .escenario {
+      position: relative;
+      height: 320px;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 3.75rem;
+      padding: 0 1rem;
+      background: var(--barra);
+    }
+
+    .panel { padding: 16px; font-size: 0.9rem; }
+    .panel p { margin: 6px 0; opacity: 0.75; }
+  </style>
+</head>
+<body>
+
+  <div class="escenario">
+    <!-- Marcador de la cabecera. El componente de foto de perfil se incorpora aquí por separado. -->
+    <div class="cabecera"></div>
+
+    <custom-menu-flotante usuario="barista"></custom-menu-flotante>
+  </div>
+
+  <div class="panel">
+    <p id="registro">Sin eventos todavía</p>
+  </div>
+
+  <script type="module">
+    const respuesta = await fetch('/boundary/components/menuFlotante/menuFlotante.html');
+    const html = await respuesta.text();
+    document.body.append(document.createRange().createContextualFragment(html));
+
+    // Solo para la prueba: simula el manejo de la sesión desde la aplicación
+    const menu = document.querySelector('custom-menu-flotante');
+    const registro = document.getElementById('registro');
+
+    // No existe una pantalla de login en la prueba: se cancela la redirección y se simula la sesión
+    menu.addEventListener('iniciar-sesion', (evento) => {
+      evento.preventDefault();
+      registro.textContent = 'Evento: iniciar-sesion (se inicia la sesión como "barista")';
+      menu.usuario = 'barista';
+    });
+
+    menu.addEventListener('salir', () => {
+      registro.textContent = 'Evento: salir (se cierra la sesión)';
+      menu.usuario = '';
+    });
+  </script>
+
+</body>
+</html>
