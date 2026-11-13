@@ -39,4 +39,9 @@
     el 2 es la linea horizontal que le hace juego al 1
     tambien usar para cualquier cosa que se de a entender error*/
     --Growl-fallo1: #F0A065;
+
+    /* Variables por defecto */
+    --margen-defecto: 1rem;
+    --radio-borde: 10px;
+    --relleno-defecto: 15px;
     }
