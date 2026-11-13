@@ -14,7 +14,8 @@
     /*Es el color que en medio de la pagina, pero va intercalado con el primario-primer-color*/
     --primario-segundo-color: #D8C3A6;
     /*Este color no solo se usa para el spinner sino tambien para cualquier linea vertical o horizontal del diseño donde se ve que es solo literalmente una linea
-    este color se usa para el growl de fallo unicamente, el de la linea de growl exito no*/
+    este color se usa para el growl de fallo unicamente, el de la linea de growl exito no
+    tambien para el menuFlotante*/
     --spinner-lineas-growl2: #FBF7F4;
     /*Para cualquier boton que sea para eliminar algo*/
     --eliminar: #AE303B;
