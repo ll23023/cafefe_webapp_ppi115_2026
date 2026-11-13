@@ -1,0 +1,78 @@
+custom-tarjeta {
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 14px;
+
+  background: var(--primario-primer-color);
+}
+
+custom-tarjeta[variante="2"] {
+  background: var(--primario-segundo-color);
+}
+
+.tarjeta__contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 16px;
+}
+
+.tarjeta__figura {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  margin: 0;
+}
+
+.tarjeta__imagen {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.tarjeta__imagen[hidden],
+.tarjeta__titulo:empty {
+  display: none;
+}
+
+.tarjeta__titulo {
+  font-weight: 700;
+  color: #000000;
+}
+
+custom-tarjeta .description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #000000;
+}
+
+custom-tarjeta[data-estado="error"] .description {
+  color: var(--Growl-fallo1);
+}
+
+/* Pie de la tarjeta: precio a la izquierda*/
+.tarjeta__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tarjeta__precio {
+  font-weight: 700;
+  color: #000000;
+}
+
+.tarjeta__pie .tarjeta__agregar {
+  margin-left: auto;
+  flex-shrink: 0;
+}

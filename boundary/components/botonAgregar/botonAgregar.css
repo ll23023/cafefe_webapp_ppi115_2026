@@ -1,0 +1,45 @@
+button[is="custom-add-button"] {
+  --add-button-tamano: 38px;
+  --add-button-fondo: var(--fondo-pagina-input);
+  --add-button-color: #000000;
+  --add-button-barra: 3px;
+
+  position: relative;
+  box-sizing: border-box;
+  width: var(--add-button-tamano);
+  height: var(--add-button-tamano);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--add-button-fondo);
+  cursor: pointer;
+}
+
+button[is="custom-add-button"]:focus-visible {
+  outline: 2px solid var(--add-button-color);
+  outline-offset: 2px;
+}
+
+button[is="custom-add-button"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-button__barra {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--add-button-color);
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+}
+
+.add-button__barra--horizontal {
+  width: 50%;
+  height: var(--add-button-barra);
+}
+
+.add-button__barra--vertical {
+  width: var(--add-button-barra);
+  height: 50%;
+}
