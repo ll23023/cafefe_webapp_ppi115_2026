@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Visual de Text</title>
+    <style>
+        :root {
+            --barra: #3F1D0E;
+            --fondo-pagina-input: #FEFBF8;
+            --primario-primer-color: #B79970;
+            --eliminar: #AE303B;
+            --estado-pendiente: #C9C2B6;
+            --Growl-fallo1: #F0A065;
+            --margen-defecto: 1rem;
+            --radio-borde: 10px;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem 2.5rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--fondo-pagina-input);
+            color: #000000;
+        }
+
+        .contenedor-test {
+            max-width: 500px;
+        }
+
+        .titulo-principal {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #6b6b6b;
+            margin: 0 0 2rem;
+            text-transform: uppercase;
+        }
+
+        .subtitulo {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 1.75rem 0 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <template id="custom-text-template">
+        <link rel="stylesheet" href="/boundary/components/text/textEstilo.css">
+
+        <div class="custom-text">
+            <label class="custom-text__label" hidden>
+                <span class="custom-text__label-text"></span>
+                <slot name="label"></slot>
+            </label>
+
+            <div class="custom-text__field">
+                <slot name="prefix"></slot>
+                <input class="custom-text__input" type="text">
+                <slot name="suffix"></slot>
+            </div>
+
+            <p class="custom-text__message" hidden>
+                <span class="custom-text__message-text"></span>
+                <slot name="message"></slot>
+            </p>
+        </div>
+    </template>
+
+    <main class="contenedor-test">
+        <p class="titulo-principal">TEST VISUAL DE TEXT</p>
+
+        <h2 class="subtitulo">Text normal</h2>
+        <custom-text></custom-text>
+
+        <h2 class="subtitulo">Text con texto adentro</h2>
+        <custom-text placeholder="Escribe tu nombre"></custom-text>
+
+        <h2 class="subtitulo">Text con error</h2>
+        <custom-text error="Campo inválido o requerido"></custom-text>
+
+        <h2 class="subtitulo">Text deshabilitado</h2>
+        <custom-text value="No se puede editar" disabled></custom-text>
+    </main>
+
+    <script type="module" src="/boundary/components/text/textComportamiento.js"></script>
+</body>
+</html>
