@@ -54,3 +54,29 @@
     width: var(--boton-circular-barra);
     height: 50%;
 }
+
+.boton-circular__icono {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+}
+
+.boton-circular__texto {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--boton-circular-color);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.boton-circular__icono[hidden],
+.boton-circular__texto[hidden],
+.boton-circular__barra[hidden] {
+    display: none;
+}

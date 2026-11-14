@@ -35,18 +35,6 @@
     </style>
 </head>
 <body>
-    <template id="custom-boton-flotante-template">
-        <link rel="stylesheet" href="/boundary/components/botonFlotante/botonFlotanteEstilo.css">
-
-        <button class="boton-flotante" type="button">
-            <span class="boton-flotante__icono">
-                <img class="boton-flotante__imagen" src="/assets/icons/CarritoCompra.png" alt="Carrito de compra">
-            </span>
-            <span class="boton-flotante__texto"></span>
-            <slot></slot>
-        </button>
-    </template>
-
     <main>
         <h2>Con texto</h2>
         <custom-boton-flotante texto="Ver carrito"></custom-boton-flotante>
@@ -55,9 +43,12 @@
         <custom-boton-flotante texto="Carrito no disponible" disabled></custom-boton-flotante>
 
         <h2>Con contenido dinámico</h2>
-        <custom-boton-flotante texto="Continuar"><span>2 productos</span></custom-boton-flotante>
+        <custom-boton-flotante texto="Continuar"><span slot="contenido">2 productos</span></custom-boton-flotante>
     </main>
 
-    <script type="module" src="/boundary/components/botonFlotante/botonFlotanteComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/botonFlotante/botonFlotantePlantilla.html']);
+    </script>
 </body>
 </html>

@@ -60,6 +60,35 @@ test('el botón circular emite tarjeta-agregar con los datos de la entidad', { s
   assert.equal(detalle.datos.nombre, 'Americano');
 });
 
+test('el botón circular renderiza texto, imagen y color desde sus atributos', { skip: !JSDOM && 'jsdom no instalado' }, () => {
+  const window = crearPagina([]);
+  const boton = window.document.createElement('custom-boton-circular');
+  boton.setAttribute('texto', '×');
+  boton.setAttribute('color', 'rgb(10, 20, 30)');
+  window.document.body.appendChild(boton);
+
+  const raiz = boton.shadowRoot;
+  assert.ok(raiz.querySelector('slot[name="contenido"]'));
+  assert.equal(raiz.querySelector('.boton-circular__texto').textContent, '×');
+  assert.equal(raiz.querySelector('.boton-circular__texto').hidden, false);
+  assert.equal(raiz.querySelectorAll('.boton-circular__barra[hidden]').length, 2);
+  assert.equal(raiz.querySelector('.boton-circular').style.getPropertyValue('--boton-circular-color'), 'rgb(10, 20, 30)');
+
+  boton.setAttribute('icono', '/assets/icons/CarritoCompra.png');
+  assert.equal(raiz.querySelector('.boton-circular__icono').getAttribute('src'), '/assets/icons/CarritoCompra.png');
+  assert.equal(raiz.querySelector('.boton-circular__icono').hidden, false);
+  assert.equal(raiz.querySelector('.boton-circular__texto').hidden, true);
+
+  boton.removeAttribute('icono');
+  boton.removeAttribute('texto');
+  assert.equal(raiz.querySelectorAll('.boton-circular__barra[hidden]').length, 0);
+
+  const contenido = window.document.createElement('span');
+  contenido.slot = 'contenido';
+  boton.appendChild(contenido);
+  assert.equal(raiz.querySelector('slot[name="contenido"]').assignedNodes()[0], contenido);
+});
+
 test('si el endpoint falla, la tarjeta muestra el error y deshabilita el botón', { skip: !JSDOM && 'jsdom no instalado' }, async () => {
   const window = crearPagina([new Response(null, { status: 404, headers: { 'Not-Found': 'id inexistente' } })]);
   const tarjeta = window.document.createElement('custom-tarjeta');

@@ -2,9 +2,11 @@
     <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
 
     <button class="boton-circular" type="button" aria-label="Agregar">
-        <slot>
+        <slot name="contenido">
             <span class="boton-circular__barra boton-circular__barra--horizontal"></span>
             <span class="boton-circular__barra boton-circular__barra--vertical"></span>
+            <img class="boton-circular__icono" alt="" hidden>
+            <span class="boton-circular__texto" aria-hidden="true" hidden></span>
         </slot>
     </button>
 </template>

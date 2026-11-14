@@ -28,15 +28,6 @@
     </style>
 </head>
 <body>
-    <template id="custom-boton-redondeado-template">
-        <link rel="stylesheet" href="/boundary/components/botonRedondeado/botonRedondeadoEstilo.css">
-
-        <button class="boton-redondeado" type="button">
-            <span class="boton-redondeado__texto"></span>
-            <slot></slot>
-        </button>
-    </template>
-
     <main>
         <h2>Acción principal</h2>
         <custom-boton-redondeado tipo="primary" texto="Completar orden"></custom-boton-redondeado>
@@ -48,9 +39,12 @@
         <custom-boton-redondeado texto="No disponible" disabled></custom-boton-redondeado>
 
         <h2>Con contenido dinámico</h2>
-        <custom-boton-redondeado tipo="secondary"><span>Cancelar</span></custom-boton-redondeado>
+        <custom-boton-redondeado tipo="secondary"><span slot="contenido">Cancelar</span></custom-boton-redondeado>
     </main>
 
-    <script type="module" src="/boundary/components/botonRedondeado/botonRedondeadoComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/botonRedondeado/botonRedondeadoPlantilla.html']);
+    </script>
 </body>
 </html>

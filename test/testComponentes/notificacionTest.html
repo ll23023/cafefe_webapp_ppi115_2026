@@ -28,19 +28,6 @@
     </style>
 </head>
 <body>
-    <template id="custom-notificacion-template">
-        <link rel="stylesheet" href="/boundary/components/notificacion/notificacionEstilo.css">
-
-        <article class="notificacion">
-            <p class="notificacion__texto">
-                <span class="notificacion__texto-atributo"></span>
-                <slot></slot>
-            </p>
-            <button class="notificacion__cerrar" type="button" aria-label="Cerrar notificación">×</button>
-            <span class="notificacion__temporizador" aria-hidden="true"></span>
-        </article>
-    </template>
-
     <main>
         <h2>Notificación de éxito</h2>
         <custom-notificacion texto="Cambios guardados" duracion="60000"></custom-notificacion>
@@ -49,9 +36,12 @@
         <custom-notificacion tipo="fracaso" texto="No se pudo completar la operación" duracion="60000"></custom-notificacion>
 
         <h2>Con contenido dinámico</h2>
-        <custom-notificacion tipo="fracaso" duracion="60000"><strong>Revisa los datos ingresados.</strong></custom-notificacion>
+        <custom-notificacion tipo="fracaso" duracion="60000"><strong slot="contenido">Revisa los datos ingresados.</strong></custom-notificacion>
     </main>
 
-    <script type="module" src="/boundary/components/notificacion/notificacionComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/notificacion/notificacionPlantilla.html']);
+    </script>
 </body>
 </html>

@@ -28,39 +28,22 @@
     </style>
 </head>
 <body>
-    <template id="custom-boton-redondeado-template">
-        <link rel="stylesheet" href="/boundary/components/botonRedondeado/botonRedondeadoEstilo.css">
-
-        <button class="boton-redondeado" type="button">
-            <span class="boton-redondeado__texto"></span>
-            <slot></slot>
-        </button>
-    </template>
-
-    <template id="custom-barra-inferior-template">
-        <link rel="stylesheet" href="/boundary/components/barraInferior/barraInferiorEstilo.css">
-
-        <div class="barra-inferior">
-            <p class="barra-inferior__texto"></p>
-            <slot></slot>
-            <div class="barra-inferior__acciones">
-                <custom-boton-redondeado class="barra-inferior__boton barra-inferior__boton--secundario" tipo="secondary"></custom-boton-redondeado>
-                <custom-boton-redondeado class="barra-inferior__boton barra-inferior__boton--primario" tipo="primary"></custom-boton-redondeado>
-            </div>
-        </div>
-    </template>
-
     <main>
         <h2>Barra con acciones</h2>
         <custom-barra-inferior texto="Total: $22.50" texto-secundario="Seguir comprando" texto-primario="Finalizar"></custom-barra-inferior>
 
         <h2>Con contenido dinámico</h2>
         <custom-barra-inferior texto="Total: $8.00" texto-secundario="Volver" texto-primario="Pagar">
-            <span>2 productos</span>
+            <span slot="contenido">2 productos</span>
         </custom-barra-inferior>
     </main>
 
-    <script type="module" src="/boundary/components/botonRedondeado/botonRedondeadoComportamiento.js"></script>
-    <script type="module" src="/boundary/components/barraInferior/barraInferiorComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes([
+            '/boundary/components/botonRedondeado/botonRedondeadoPlantilla.html',
+            '/boundary/components/barraInferior/barraInferiorPlantilla.html'
+        ]);
+    </script>
 </body>
 </html>

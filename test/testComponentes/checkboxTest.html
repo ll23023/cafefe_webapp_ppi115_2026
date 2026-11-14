@@ -28,18 +28,6 @@
     </style>
 </head>
 <body>
-    <template id="custom-checkbox-template">
-        <link rel="stylesheet" href="/boundary/components/checkbox/checkboxEstilo.css">
-
-        <div class="custom-checkbox">
-            <input class="custom-checkbox__input" type="checkbox" aria-label="Seleccionar">
-            <label class="custom-checkbox__label">
-                <span class="custom-checkbox__label-text"></span>
-                <slot></slot>
-            </label>
-        </div>
-    </template>
-
     <main>
         <h2>Sin seleccionar</h2>
         <custom-checkbox label="Recibir novedades"></custom-checkbox>
@@ -54,9 +42,12 @@
         <custom-checkbox label="Preferencia fija" checked disabled></custom-checkbox>
 
         <h2>Con contenido dinámico</h2>
-        <custom-checkbox><span>Usar contenido del slot</span></custom-checkbox>
+        <custom-checkbox><span slot="contenido">Usar contenido del slot</span></custom-checkbox>
     </main>
 
-    <script type="module" src="/boundary/components/checkbox/checkboxComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/checkbox/checkboxPlantilla.html']);
+    </script>
 </body>
 </html>

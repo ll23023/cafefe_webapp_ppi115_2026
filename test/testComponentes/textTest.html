@@ -46,41 +46,25 @@
 </head>
 <body>
 
-    <template id="custom-text-template">
-        <link rel="stylesheet" href="/boundary/components/text/textEstilo.css">
-
-        <div class="custom-text">
-            <label class="custom-text__label" hidden>
-                <span class="custom-text__label-text"></span>
-                <slot name="label"></slot>
-            </label>
-
-            <div class="custom-text__field">
-                <slot name="prefix"></slot>
-                <input class="custom-text__input" type="text">
-                <slot name="suffix"></slot>
-            </div>
-
-            <p class="custom-text__message" hidden>
-                <span class="custom-text__message-text"></span>
-                <slot name="message"></slot>
-            </p>
-        </div>
-    </template>
-
     <main class="contenedor-test">
         <p class="titulo-principal">TEST VISUAL DE TEXT</p>
 
         <h2 class="subtitulo">Text normal</h2>
-        <custom-text></custom-text>
+        <custom-text label="Nombre"></custom-text>
 
         <h2 class="subtitulo">Text con error</h2>
-        <custom-text error="Campo inválido o requerido"></custom-text>
+        <custom-text label="Correo" error="Campo inválido o requerido"></custom-text>
 
         <h2 class="subtitulo">Text deshabilitado</h2>
-        <custom-text value="No se puede editar" disabled></custom-text>
+        <custom-text label="Solo lectura" value="No se puede editar" disabled></custom-text>
+
+        <h2 class="subtitulo">Label oculto explícitamente</h2>
+        <custom-text label="No se muestra" hide-label></custom-text>
     </main>
 
-    <script type="module" src="/boundary/components/text/textComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/text/textPlantilla.html']);
+    </script>
 </body>
 </html>

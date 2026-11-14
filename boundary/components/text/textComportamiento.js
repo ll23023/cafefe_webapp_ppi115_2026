@@ -12,6 +12,7 @@ class CustomText extends HTMLElement {
         'type',
         'helper',
         'error',
+        'hide-label',
         'disabled',
         'required',
         'name'
@@ -109,8 +110,7 @@ class CustomText extends HTMLElement {
 
         // Label (mediante atributo 'label' o proyectado con slot="label")
         this.#labelText.textContent = label;
-        const mostrarLabel = Boolean(label) || this.#tieneSlotAsignado('label');
-        this.#label.hidden = !mostrarLabel;
+        this.#label.hidden = this.hasAttribute('hide-label');
 
         // Atributos del input interno
         this.#input.type = type;

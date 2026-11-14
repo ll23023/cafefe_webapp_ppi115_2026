@@ -28,17 +28,6 @@
     </style>
 </head>
 <body>
-    <template id="custom-boton-circular-template">
-        <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
-
-        <button class="boton-circular" type="button" aria-label="Agregar">
-            <slot>
-                <span class="boton-circular__barra boton-circular__barra--horizontal"></span>
-                <span class="boton-circular__barra boton-circular__barra--vertical"></span>
-            </slot>
-        </button>
-    </template>
-
     <main>
         <h2>Estado normal</h2>
         <custom-boton-circular></custom-boton-circular>
@@ -47,9 +36,18 @@
         <custom-boton-circular disabled></custom-boton-circular>
 
         <h2>Símbolo proyectado</h2>
-        <custom-boton-circular aria-label="Agregar producto"><span>+</span></custom-boton-circular>
+        <custom-boton-circular aria-label="Agregar producto" texto="+"></custom-boton-circular>
+
+        <h2>Texto y color</h2>
+        <custom-boton-circular aria-label="Cerrar" texto="×" color="#B79970"></custom-boton-circular>
+
+        <h2>Imagen</h2>
+        <custom-boton-circular aria-label="Agregar producto" icono="/assets/icons/CarritoCompra.png"></custom-boton-circular>
     </main>
 
-    <script type="module" src="/boundary/components/botonCircular/botonCircularComportamiento.js"></script>
+    <script type="module">
+        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
+        await registrarComponentes(['/boundary/components/botonCircular/botonCircularPlantilla.html']);
+    </script>
 </body>
 </html>
