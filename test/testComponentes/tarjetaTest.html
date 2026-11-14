@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test visual de Tarjeta</title>
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            color: var(--barra);
+            background: var(--fondo-pagina-input);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <template id="custom-boton-circular-template">
+        <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
+
+        <button class="boton-circular" type="button" aria-label="Agregar">
+            <slot>
+                <span class="boton-circular__barra boton-circular__barra--horizontal"></span>
+                <span class="boton-circular__barra boton-circular__barra--vertical"></span>
+            </slot>
+        </button>
+    </template>
+
+    <template id="custom-tarjeta-template">
+        <link rel="stylesheet" href="/boundary/components/tarjeta/tarjetaEstilo.css">
+
+        <article class="tarjeta">
+            <img class="tarjeta__imagen" src="/assets/images/tarjetaImagenes/cafeNormal.jpeg" alt="">
+            <div class="tarjeta__contenido">
+                <h2 class="tarjeta__titulo"></h2>
+                <p class="tarjeta__descripcion"></p>
+                <slot></slot>
+            </div>
+            <footer class="tarjeta__pie">
+                <span class="tarjeta__precio"></span>
+                <custom-boton-circular class="tarjeta__agregar" aria-label="Agregar producto"></custom-boton-circular>
+            </footer>
+        </article>
+    </template>
+
+    <main>
+        <h2>Estado normal</h2>
+        <custom-tarjeta titulo="Café de la casa" descripcion="Café recién preparado, de sabor intenso." precio="$2.50"></custom-tarjeta>
+
+        <h2>Variante secundaria</h2>
+        <custom-tarjeta variante="secundaria" titulo="Café con leche" descripcion="Espresso con leche cremosa." precio="$3.25"></custom-tarjeta>
+
+        <h2>Sin precio</h2>
+        <custom-tarjeta titulo="Café para llevar" descripcion="Elige tu tamaño favorito."></custom-tarjeta>
+
+        <h2>Deshabilitada</h2>
+        <custom-tarjeta titulo="Producto no disponible" descripcion="Por el momento no se puede agregar." precio="$4.00" disabled></custom-tarjeta>
+    </main>
+
+    <script type="module" src="/boundary/components/botonCircular/botonCircularComportamiento.js"></script>
+    <script type="module" src="/boundary/components/tarjeta/tarjetaComportamiento.js"></script>
+</body>
+</html>

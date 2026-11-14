@@ -1,0 +1,13 @@
+<template id="custom-boton-flotante-template">
+    <link rel="stylesheet" href="/boundary/components/botonFlotante/botonFlotanteEstilo.css">
+
+    <button class="boton-flotante" type="button">
+        <span class="boton-flotante__icono">
+            <img class="boton-flotante__imagen" src="/assets/icons/CarritoCompra.png" alt="Carrito de compra">
+        </span>
+        <span class="boton-flotante__texto"></span>
+        <slot></slot>
+    </button>
+</template>
+
+<script type="module" src="/boundary/components/botonFlotante/botonFlotanteComportamiento.js"></script>

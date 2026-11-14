@@ -1,0 +1,14 @@
+<template id="spinner-numerico-template">
+    <link rel="stylesheet" href="/boundary/components/spinnerNumerico/spinnerNumericoEstilo.css">
+
+    <div class="spinner-numerico">
+        <button class="spinner-numerico__boton spinner-numerico__boton--menos" type="button" aria-label="Disminuir">−</button>
+        <input class="spinner-numerico__input" type="number" aria-label="Cantidad">
+        <button class="spinner-numerico__boton spinner-numerico__boton--mas" type="button" aria-label="Aumentar">+</button>
+    </div>
+    <div class="spinner-numerico__contenido">
+        <slot></slot>
+    </div>
+</template>
+
+<script type="module" src="/boundary/components/spinnerNumerico/spinnerNumericoComportamiento.js"></script>

@@ -1,0 +1,54 @@
+:host {
+
+    --barra-inferior-texto: var(--fondo-pagina-input, #FEFBF8);
+
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 36rem;
+    font-family: inherit;
+}
+
+:host([hidden]) {
+    display: none;
+}
+
+.barra-inferior {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 4rem;
+    padding: 0.5rem 0.625rem 0.5rem 1.5rem;
+    color: var(--barra-inferior-texto);
+    background: var(--barra, #3F1D0E);
+    border-radius: var(--radio-borde, 10px);
+}
+
+.barra-inferior__texto {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    color: var(--barra-inferior-texto);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.barra-inferior__texto[hidden] {
+    display: none;
+}
+
+.barra-inferior__acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.barra-inferior__boton {
+    flex: 0 0 auto;
+}
+
+::slotted(*) {
+    color: var(--barra-inferior-texto);
+}

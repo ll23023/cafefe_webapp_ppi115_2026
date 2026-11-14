@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test visual de Menú Flotante</title>
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--barra);
+            background: var(--fondo-pagina-input);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+        }
+
+        custom-menu-flotante {
+            position: static;
+            top: auto;
+            right: auto;
+            z-index: auto;
+        }
+    </style>
+</head>
+<body>
+    <template id="custom-menu-flotante-template">
+        <link rel="stylesheet" href="/boundary/components/menuFlotante/menuFlotanteEstilo.css">
+
+        <section class="menu-flotante">
+            <h2 class="menu-flotante__saludo"></h2>
+            <slot></slot>
+            <hr class="menu-flotante__linea">
+            <div class="menu-flotante__acciones">
+                <button type="button" class="menu-flotante__boton menu-flotante__boton--login">Iniciar sesión</button>
+                <button type="button" class="menu-flotante__boton menu-flotante__boton--salir">Salir</button>
+            </div>
+        </section>
+    </template>
+
+    <main>
+        <h2>Sin sesión iniciada</h2>
+        <custom-menu-flotante></custom-menu-flotante>
+
+        <h2>Sesión iniciada</h2>
+        <custom-menu-flotante usuario="Mil"></custom-menu-flotante>
+
+        <h2>Con contenido dinámico</h2>
+        <custom-menu-flotante usuario="Mil">
+            <p>Sesión activa desde hoy.</p>
+        </custom-menu-flotante>
+    </main>
+
+    <script type="module" src="/boundary/components/menuFlotante/menuFlotanteComportamiento.js"></script>
+</body>
+</html>

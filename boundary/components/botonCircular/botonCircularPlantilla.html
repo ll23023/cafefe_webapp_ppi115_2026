@@ -1,0 +1,12 @@
+<template id="custom-boton-circular-template">
+    <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
+
+    <button class="boton-circular" type="button" aria-label="Agregar">
+        <slot>
+            <span class="boton-circular__barra boton-circular__barra--horizontal"></span>
+            <span class="boton-circular__barra boton-circular__barra--vertical"></span>
+        </slot>
+    </button>
+</template>
+
+<script type="module" src="/boundary/components/botonCircular/botonCircularComportamiento.js"></script>

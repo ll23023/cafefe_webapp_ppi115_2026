@@ -1,0 +1,15 @@
+<template id="custom-menu-flotante-template">
+    <link rel="stylesheet" href="/boundary/components/menuFlotante/menuFlotanteEstilo.css">
+
+    <section class="menu-flotante">
+        <h2 class="menu-flotante__saludo"></h2>
+        <slot></slot>
+        <hr class="menu-flotante__linea">
+        <div class="menu-flotante__acciones">
+            <button type="button" class="menu-flotante__boton menu-flotante__boton--login">Iniciar sesión</button>
+            <button type="button" class="menu-flotante__boton menu-flotante__boton--salir">Salir</button>
+        </div>
+    </section>
+</template>
+
+<script type="module" src="/boundary/components/menuFlotante/menuFlotanteComportamiento.js"></script>

@@ -1,0 +1,13 @@
+<template id="custom-checkbox-template">
+    <link rel="stylesheet" href="/boundary/components/checkbox/checkboxEstilo.css">
+
+    <div class="custom-checkbox">
+        <input class="custom-checkbox__input" type="checkbox" aria-label="Seleccionar">
+        <label class="custom-checkbox__label">
+            <span class="custom-checkbox__label-text"></span>
+            <slot></slot>
+        </label>
+    </div>
+</template>
+
+<script type="module" src="/boundary/components/checkbox/checkboxComportamiento.js"></script>

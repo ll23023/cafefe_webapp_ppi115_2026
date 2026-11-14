@@ -1,0 +1,86 @@
+:host {
+    --notificacion-barra: var(--Growl-exitoso2, #D6EBF3);
+    --notificacion-color: var(--barra, #3F1D0E);
+    --notificacion-duracion: 5000ms;
+
+    display: block;
+    box-sizing: border-box;
+    width: min(24rem, calc(100vw - 2rem));
+    color: var(--notificacion-color);
+    font-family: inherit;
+}
+
+:host([hidden]) {
+    display: none;
+}
+
+:host([tipo="fracaso"]) {
+    --notificacion-barra: var(--spinner-lineas-growl2, #FBF7F4);
+}
+
+.notificacion {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 4.5rem;
+    padding: 1rem 2.75rem 1.25rem 1rem;
+    overflow-wrap: anywhere;
+    background: var(--Growl-exitoso1, #FAFAF7);
+    border: 1px solid var(--notificacion-barra);
+    border-radius: var(--radio-borde, 10px);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
+}
+
+:host([tipo="fracaso"]) .notificacion {
+    background: var(--Growl-fallo1, #F0A065);
+}
+
+.notificacion__texto {
+    margin: 0;
+    color: var(--notificacion-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.notificacion__cerrar {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.6rem;
+    padding: 0.25rem;
+    color: var(--notificacion-color);
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.notificacion__cerrar:focus-visible {
+    outline: 2px solid var(--primario-primer-color, #B79970);
+    outline-offset: 2px;
+}
+
+.notificacion__temporizador {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.5rem;
+    left: 0.6rem;
+    height: 3px;
+    background: var(--notificacion-barra);
+    border-radius: 2px;
+    transform: scaleX(1);
+    transform-origin: left center;
+    animation: notificacion-temporizador var(--notificacion-duracion) linear forwards;
+}
+
+:host(:hover) .notificacion__temporizador,
+:host(:focus-within) .notificacion__temporizador {
+    animation-play-state: paused;
+}
+
+@keyframes notificacion-temporizador {
+    to {
+        transform: scaleX(0);
+    }
+}

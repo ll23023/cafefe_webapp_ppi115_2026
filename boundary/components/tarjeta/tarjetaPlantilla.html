@@ -1,0 +1,18 @@
+<template id="custom-tarjeta-template">
+    <link rel="stylesheet" href="/boundary/components/tarjeta/tarjetaEstilo.css">
+
+    <article class="tarjeta">
+        <img class="tarjeta__imagen" src="/assets/images/tarjetaImagenes/cafeNormal.jpeg" alt="">
+        <div class="tarjeta__contenido">
+            <h2 class="tarjeta__titulo"></h2>
+            <p class="tarjeta__descripcion"></p>
+            <slot></slot>
+        </div>
+        <footer class="tarjeta__pie">
+            <span class="tarjeta__precio"></span>
+            <custom-boton-circular class="tarjeta__agregar" aria-label="Agregar producto"></custom-boton-circular>
+        </footer>
+    </article>
+</template>
+
+<script type="module" src="/boundary/components/tarjeta/tarjetaComportamiento.js"></script>

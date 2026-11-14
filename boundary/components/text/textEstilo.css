@@ -1,9 +1,6 @@
 :host {
     --custom-text-borde: var(--barra, #3F1D0E);
-    --custom-text-fondo: var(--fondo-pagina-input, #FEFBF8);
-    --custom-text-radio: var(--radio-borde, 14px);
     --custom-text-error: var(--eliminar, #AE303B);
-    --custom-text-error-suave: var(--Growl-fallo1, #F0A065);
 
     display: block;
     width: 100%;
@@ -45,9 +42,9 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0 16px;
-    background: var(--custom-text-fondo);
+    background: var(--fondo-pagina-input, #FEFBF8);
     border: 2px solid var(--custom-text-borde);
-    border-radius: var(--custom-text-radio);
+    border-radius: var(--radio-borde, 14px);
     transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -65,10 +62,6 @@
     background: transparent;
     font: inherit;
     color: var(--custom-text-borde);
-}
-
-.custom-text__input::placeholder {
-    color: #7c6f68;
 }
 
 .custom-text__input:disabled {
@@ -106,7 +99,7 @@
 }
 
 .custom-text--error .custom-text__field:focus-within {
-    box-shadow: 0 0 0 2px var(--custom-text-error-suave);
+    box-shadow: 0 0 0 2px var(--Growl-fallo1, #F0A065);
 }
 
 .custom-text--error .custom-text__message {

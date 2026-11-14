@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test visual de Spinner Numérico</title>
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--barra);
+            background: var(--fondo-pagina-input);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <template id="spinner-numerico-template">
+        <link rel="stylesheet" href="/boundary/components/spinnerNumerico/spinnerNumericoEstilo.css">
+
+        <div class="spinner-numerico">
+            <button class="spinner-numerico__boton spinner-numerico__boton--menos" type="button" aria-label="Disminuir">−</button>
+            <input class="spinner-numerico__input" type="number" aria-label="Cantidad">
+            <button class="spinner-numerico__boton spinner-numerico__boton--mas" type="button" aria-label="Aumentar">+</button>
+        </div>
+        <div class="spinner-numerico__contenido">
+            <slot></slot>
+        </div>
+    </template>
+
+    <main>
+        <h2>Estado normal</h2>
+        <spinner-numerico value="3"></spinner-numerico>
+
+        <h2>Con límites y paso</h2>
+        <spinner-numerico min="1" max="5" step="1" value="5"></spinner-numerico>
+
+        <h2>Deshabilitado</h2>
+        <spinner-numerico value="2" disabled></spinner-numerico>
+
+        <h2>Solo lectura</h2>
+        <spinner-numerico value="4" readonly></spinner-numerico>
+    </main>
+
+    <script type="module" src="/boundary/components/spinnerNumerico/spinnerNumericoComportamiento.js"></script>
+</body>
+</html>

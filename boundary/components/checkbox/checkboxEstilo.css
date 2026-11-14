@@ -1,0 +1,99 @@
+:host {
+    --custom-checkbox-color: var(--barra, #3F1D0E);
+    --custom-checkbox-fondo: var(--fondo-pagina-input, #FEFBF8);
+    --custom-checkbox-tamano: 1.5rem;
+
+    display: block;
+    box-sizing: border-box;
+    color: var(--custom-checkbox-color);
+    font-family: inherit;
+}
+
+:host([hidden]) {
+    display: none;
+}
+
+.custom-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.custom-checkbox__input {
+    display: inline-grid;
+    flex: 0 0 var(--custom-checkbox-tamano);
+    place-content: center;
+    box-sizing: border-box;
+    width: var(--custom-checkbox-tamano);
+    height: var(--custom-checkbox-tamano);
+    margin: 0;
+    appearance: none;
+    background: var(--custom-checkbox-fondo);
+    border: 2px solid var(--custom-checkbox-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-checkbox__input::after {
+    display: block;
+    width: 0.72rem;
+    height: 0.4rem;
+    content: '';
+    border-bottom: 3px solid var(--custom-checkbox-fondo);
+    border-left: 3px solid var(--custom-checkbox-fondo);
+    opacity: 0;
+    transform: translateY(-1px) rotate(-45deg);
+}
+
+.custom-checkbox__input:checked {
+    background: var(--custom-checkbox-color);
+}
+
+.custom-checkbox__input:checked::after {
+    opacity: 1;
+}
+
+.custom-checkbox__input:indeterminate {
+    background: var(--custom-checkbox-color);
+}
+
+.custom-checkbox__input:indeterminate::after {
+    width: 0.65rem;
+    height: 0;
+    border: 0;
+    border-top: 3px solid var(--custom-checkbox-fondo);
+    opacity: 1;
+    transform: none;
+}
+
+.custom-checkbox__input:focus-visible {
+    outline: 2px solid var(--primario-primer-color, #B79970);
+    outline-offset: 3px;
+}
+
+.custom-checkbox__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--custom-checkbox-color);
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-checkbox__label[hidden] {
+    display: none;
+}
+
+.custom-checkbox__label-text:empty {
+    display: none;
+}
+
+.custom-checkbox__input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.custom-checkbox__input:disabled + .custom-checkbox__label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

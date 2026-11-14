@@ -3,10 +3,11 @@
  *
  * @author Mil
  */
+
 class CustomText extends HTMLElement {
+    
     static observedAttributes = [
         'label',
-        'placeholder',
         'value',
         'type',
         'helper',
@@ -99,7 +100,6 @@ class CustomText extends HTMLElement {
 
     #render() {
         const label = this.getAttribute('label') ?? '';
-        const placeholder = this.getAttribute('placeholder') ?? '';
         const type = this.getAttribute('type') ?? 'text';
         const error = this.getAttribute('error') ?? '';
         const helper = this.getAttribute('helper') ?? '';
@@ -114,7 +114,6 @@ class CustomText extends HTMLElement {
 
         // Atributos del input interno
         this.#input.type = type;
-        this.#input.placeholder = placeholder;
         this.#input.disabled = disabled;
         this.#input.required = required;
         if (name) {

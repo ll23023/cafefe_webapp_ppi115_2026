@@ -1,0 +1,75 @@
+:host {
+    --boton-flotante-derecha: 16px;
+
+    position: absolute;
+    right: var(--boton-flotante-derecha);
+    bottom: 16px;
+    z-index: 100;
+    display: block;
+    box-sizing: border-box;
+    width: min(30rem, calc(100vw - var(--boton-flotante-derecha) - var(--boton-flotante-derecha)));
+    font-family: inherit;
+}
+
+:host([hidden]) {
+    display: none;
+}
+
+.boton-flotante {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-height: 4.5rem;
+    padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+    color: var(--barra, #3F1D0E);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    background: var(--carrusel-filter, #D6AA97);
+    background: color-mix(in srgb, var(--carrusel-filter, #D6AA97) 70%, transparent);
+    border: 0;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+}
+
+.boton-flotante:focus-visible {
+    outline: 2px solid var(--barra, #3F1D0E);
+    outline-offset: 3px;
+}
+
+.boton-flotante:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.boton-flotante__icono {
+    display: flex;
+    flex: 0 0 3.5rem;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: var(--floatbutton-carrito-compra, #8D8961);
+    border-radius: 50%;
+}
+
+.boton-flotante__imagen {
+    display: block;
+    width: 68%;
+    height: 68%;
+    object-fit: contain;
+}
+
+.boton-flotante__texto {
+    flex: 1;
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.boton-flotante__texto[hidden] {
+    display: none;
+}

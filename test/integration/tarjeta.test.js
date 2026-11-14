@@ -1,4 +1,4 @@
-// Prueba de integración de la tarjeta y su AddButton en un DOM simulado.
+// Prueba de integración de la tarjeta y su botón circular en un DOM simulado.
 // Requiere jsdom; si no está instalado, la prueba se omite.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -8,8 +8,9 @@ let JSDOM = null;
 try { ({ JSDOM } = require('jsdom')); } catch { /* jsdom no instalado */ }
 
 const SCRIPTS = ['entity/Uuid.js', 'entity/Entidades.js', 'entity/producto.js', 'control/DefaultDAO.js',
-  'boundary/Model.js', 'boundary/components/botonAgregar/botonAgregar.js', 'boundary/components/tarjeta/tarjeta.js'];
-const PLANTILLAS = ['boundary/components/botonAgregar/botonAgregar.html', 'boundary/components/tarjeta/tarjeta.html'];
+  'boundary/Model.js', 'boundary/components/botonCircular/botonCircularComportamiento.js', 'boundary/components/tarjeta/tarjeta.js'];
+
+const PLANTILLAS = ['boundary/components/botonCircular/botonCircularPlantilla.html', 'boundary/components/tarjeta/tarjeta.html'];
 
 const esperar = () => new Promise((resolver) => setTimeout(resolver, 20));
 
@@ -41,12 +42,12 @@ test('la tarjeta consume el endpoint y cumple la estructura del diseño', { skip
   assert.equal(tarjeta.querySelector('p.description').textContent, 'Café negro');
   assert.equal(tarjeta.querySelector('figcaption').textContent, 'Americano');
 
-  const boton = tarjeta.querySelector('button[is="custom-add-button"]');
-  assert.equal(boton instanceof window.HTMLButtonElement, true);
-  assert.equal(boton.querySelectorAll('span').length, 2);
+  const boton = tarjeta.querySelector('custom-boton-circular');
+  assert.equal(boton instanceof window.HTMLElement, true);
+  assert.equal(boton.shadowRoot.querySelectorAll('.boton-circular__barra').length, 2);
 });
 
-test('el AddButton emite tarjeta-agregar con los datos de la entidad', { skip: !JSDOM && 'jsdom no instalado' }, async () => {
+test('el botón circular emite tarjeta-agregar con los datos de la entidad', { skip: !JSDOM && 'jsdom no instalado' }, async () => {
   const window = crearPagina([json(datos)]);
   const tarjeta = window.document.createElement('custom-tarjeta');
   tarjeta.setAttribute('endpoint', `producto/${ID}`);
@@ -55,7 +56,7 @@ test('el AddButton emite tarjeta-agregar con los datos de la entidad', { skip: !
 
   let detalle = null;
   window.document.addEventListener('tarjeta-agregar', (e) => { detalle = e.detail; });
-  tarjeta.querySelector('button').click();
+  tarjeta.querySelector('custom-boton-circular').click();
   assert.equal(detalle.datos.nombre, 'Americano');
 });
 
@@ -68,5 +69,5 @@ test('si el endpoint falla, la tarjeta muestra el error y deshabilita el botón'
 
   assert.equal(tarjeta.dataset.estado, 'error');
   assert.equal(tarjeta.querySelector('.description').textContent, 'id inexistente');
-  assert.equal(tarjeta.querySelector('button').disabled, true);
+  assert.equal(tarjeta.querySelector('custom-boton-circular').disabled, true);
 });

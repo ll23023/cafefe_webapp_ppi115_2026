@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test visual de Botón Circular</title>
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--barra);
+            background: var(--fondo-pagina-input);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <template id="custom-boton-circular-template">
+        <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
+
+        <button class="boton-circular" type="button" aria-label="Agregar">
+            <slot>
+                <span class="boton-circular__barra boton-circular__barra--horizontal"></span>
+                <span class="boton-circular__barra boton-circular__barra--vertical"></span>
+            </slot>
+        </button>
+    </template>
+
+    <main>
+        <h2>Estado normal</h2>
+        <custom-boton-circular></custom-boton-circular>
+
+        <h2>Deshabilitado</h2>
+        <custom-boton-circular disabled></custom-boton-circular>
+
+        <h2>Símbolo proyectado</h2>
+        <custom-boton-circular aria-label="Agregar producto"><span>+</span></custom-boton-circular>
+    </main>
+
+    <script type="module" src="/boundary/components/botonCircular/botonCircularComportamiento.js"></script>
+</body>
+</html>

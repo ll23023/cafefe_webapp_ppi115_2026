@@ -1,0 +1,16 @@
+<!-- Requiere que custom-boton-redondeado esté definido antes de conectar esta barra -->
+
+<template id="custom-barra-inferior-template">
+    <link rel="stylesheet" href="/boundary/components/barraInferior/barraInferiorEstilo.css">
+
+    <div class="barra-inferior">
+        <p class="barra-inferior__texto"></p>
+        <slot></slot>
+        <div class="barra-inferior__acciones">
+            <custom-boton-redondeado class="barra-inferior__boton barra-inferior__boton--secundario" tipo="secondary"></custom-boton-redondeado>
+            <custom-boton-redondeado class="barra-inferior__boton barra-inferior__boton--primario" tipo="primary"></custom-boton-redondeado>
+        </div>
+    </div>
+</template>
+
+<script type="module" src="/boundary/components/barraInferior/barraInferiorComportamiento.js"></script>

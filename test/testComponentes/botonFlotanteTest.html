@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test visual de Botón Flotante</title>
+    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: var(--barra);
+            background: var(--fondo-pagina-input);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        h2 {
+            margin: 1rem 0 0;
+            font-size: 1.1rem;
+        }
+
+        custom-boton-flotante {
+            position: static;
+            inset: auto;
+            z-index: auto;
+            width: min(30rem, 100%);
+        }
+    </style>
+</head>
+<body>
+    <template id="custom-boton-flotante-template">
+        <link rel="stylesheet" href="/boundary/components/botonFlotante/botonFlotanteEstilo.css">
+
+        <button class="boton-flotante" type="button">
+            <span class="boton-flotante__icono">
+                <img class="boton-flotante__imagen" src="/assets/icons/CarritoCompra.png" alt="Carrito de compra">
+            </span>
+            <span class="boton-flotante__texto"></span>
+            <slot></slot>
+        </button>
+    </template>
+
+    <main>
+        <h2>Con texto</h2>
+        <custom-boton-flotante texto="Ver carrito"></custom-boton-flotante>
+
+        <h2>Deshabilitado</h2>
+        <custom-boton-flotante texto="Carrito no disponible" disabled></custom-boton-flotante>
+
+        <h2>Con contenido dinámico</h2>
+        <custom-boton-flotante texto="Continuar"><span>2 productos</span></custom-boton-flotante>
+    </main>
+
+    <script type="module" src="/boundary/components/botonFlotante/botonFlotanteComportamiento.js"></script>
+</body>
+</html>
