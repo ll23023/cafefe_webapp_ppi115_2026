@@ -1,0 +1,23 @@
+<template id="custom-text-template">
+    <link rel="stylesheet" href="/boundary/components/text/textEstilo.css">
+
+    <div class="custom-text">
+        <label class="custom-text__label" hidden>
+            <span class="custom-text__label-text"></span>
+            <slot name="label"></slot>
+        </label>
+
+        <div class="custom-text__field">
+            <slot name="prefix"></slot>
+            <input class="custom-text__input" type="text">
+            <slot name="suffix"></slot>
+        </div>
+
+        <p class="custom-text__message" hidden>
+            <span class="custom-text__message-text"></span>
+            <slot name="message"></slot>
+        </p>
+    </div>
+</template>
+
+<script type="module" src="/boundary/components/text/textComportamiento.js"></script>

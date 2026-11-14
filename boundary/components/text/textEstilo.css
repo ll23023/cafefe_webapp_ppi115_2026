@@ -1,0 +1,115 @@
+:host {
+    --custom-text-borde: var(--barra, #3F1D0E);
+    --custom-text-fondo: var(--fondo-pagina-input, #FEFBF8);
+    --custom-text-radio: var(--radio-borde, 14px);
+    --custom-text-error: var(--eliminar, #AE303B);
+    --custom-text-error-suave: var(--Growl-fallo1, #F0A065);
+
+    display: block;
+    width: 100%;
+    margin-bottom: var(--margen-defecto, 1rem);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+:host([hidden]) {
+    display: none;
+}
+
+.custom-text {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.custom-text__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--custom-text-borde);
+    cursor: pointer;
+}
+
+.custom-text__label[hidden],
+.custom-text__message[hidden] {
+    display: none;
+}
+
+.custom-text__field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    background: var(--custom-text-fondo);
+    border: 2px solid var(--custom-text-borde);
+    border-radius: var(--custom-text-radio);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.custom-text__field:focus-within {
+    box-shadow: 0 0 0 2px var(--primario-primer-color, #B79970);
+}
+
+.custom-text__input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    color: var(--custom-text-borde);
+}
+
+.custom-text__input::placeholder {
+    color: #7c6f68;
+}
+
+.custom-text__input:disabled {
+    cursor: not-allowed;
+}
+
+::slotted([slot="prefix"]),
+::slotted([slot="suffix"]) {
+    display: inline-flex;
+    align-items: center;
+    color: var(--custom-text-borde);
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.custom-text__message {
+    margin: 6px 0 0;
+    font-size: 0.8125rem;
+    color: #6b5e57;
+}
+
+.custom-text--disabled .custom-text__field {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--estado-pendiente, #C9C2B6);
+}
+
+.custom-text--disabled .custom-text__label {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.custom-text--error .custom-text__field {
+    border-color: var(--custom-text-error);
+}
+
+.custom-text--error .custom-text__field:focus-within {
+    box-shadow: 0 0 0 2px var(--custom-text-error-suave);
+}
+
+.custom-text--error .custom-text__message {
+    color: var(--custom-text-error);
+    font-weight: 500;
+}
