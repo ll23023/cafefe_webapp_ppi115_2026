@@ -1,4 +1,4 @@
-import { Producto } from '../entity/producto.js';
+import { Producto } from '../entity/Producto.js';
 import { BaseService } from './BaseService.js';
 
 /**
