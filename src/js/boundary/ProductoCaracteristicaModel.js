@@ -8,7 +8,15 @@ import { ProductoCaracteristica } from '../entity/ProductoCaracteristica.js';
  */
 export class ProductoCaracteristicaModel extends BaseModel {
     constructor(tamanoPagina = 10) {
-        super(new ProductoCaracteristicaService(), ProductoCaracteristica, tamanoPagina);
+        super({
+            service: new ProductoCaracteristicaService(),
+            EntityClass: ProductoCaracteristica,
+            max: tamanoPagina,
+        });
+    }
+
+    async cargar(first = this.first, max = this.max) {
+        return super.cargar(first, max, this.filtros ?? {});
     }
 
     async cargarPorProducto(idProducto) {

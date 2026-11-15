@@ -8,7 +8,15 @@ import { Descuento } from '../entity/Descuento.js';
  */
 export class DescuentoModel extends BaseModel {
     constructor(tamanoPagina = 10) {
-        super(new DescuentoService(), Descuento, tamanoPagina);
+        super({
+            service: new DescuentoService(),
+            EntityClass: Descuento,
+            max: tamanoPagina,
+        });
+    }
+
+    async cargar(first = this.first, max = this.max) {
+        return super.cargar(first, max, this.filtros ?? {});
     }
 
     async cargarPorTipoDescuento(idTipoDescuento) {

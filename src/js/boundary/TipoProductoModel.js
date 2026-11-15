@@ -8,6 +8,10 @@ import { TipoProducto } from '../entity/TipoProducto.js';
  */
 export class TipoProductoModel extends BaseModel {
     constructor(tamanoPagina = 10) {
-        super(new TipoProductoService(), TipoProducto, tamanoPagina);
+        super({
+            service: new TipoProductoService(),
+            EntityClass: TipoProducto,
+            max: tamanoPagina,
+        });
     }
 }

@@ -8,6 +8,10 @@ import { Caja } from '../entity/Caja.js';
  */
 export class CajaModel extends BaseModel {
     constructor(tamanoPagina = 10) {
-        super(new CajaService(), Caja, tamanoPagina);
+        super({
+            service: new CajaService(),
+            EntityClass: Caja,
+            max: tamanoPagina,
+        });
     }
 }

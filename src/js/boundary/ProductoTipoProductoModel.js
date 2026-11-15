@@ -8,7 +8,15 @@ import { ProductoTipoProducto } from '../entity/ProductoTipoProducto.js';
  */
 export class ProductoTipoProductoModel extends BaseModel {
     constructor(tamanoPagina = 10) {
-        super(new ProductoTipoProductoService(), ProductoTipoProducto, tamanoPagina);
+        super({
+            service: new ProductoTipoProductoService(),
+            EntityClass: ProductoTipoProducto,
+            max: tamanoPagina,
+        });
+    }
+
+    async cargar(first = this.first, max = this.max) {
+        return super.cargar(first, max, this.filtros ?? {});
     }
 
     async cargarPorProducto(idProducto) {
