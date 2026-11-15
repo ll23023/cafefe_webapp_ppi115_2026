@@ -1,5 +1,4 @@
 :root {
-
     /*La barra que esta arriba, y para la barra de abajo*/
     --barra: #3F1D0E;
     /*Son los circulos que trataremos como carrusel donde estaran bebidas, comida, perecedero, etc
@@ -39,6 +38,8 @@
     el 2 es la linea horizontal que le hace juego al 1
     tambien usar para cualquier cosa que se de a entender error*/
     --Growl-fallo1: #F0A065;
+    --fondo-oscuro: rgba(0, 0, 0, 0.3);
+    --blanco-simple: #FFFFFF;
 
     /* Variables por defecto */
     --margen-defecto: 1rem;

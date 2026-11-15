@@ -1,0 +1,33 @@
+:host {
+    display: block;
+}
+
+.carrusel-filtros {
+    display: flex;
+    align-items: center;
+    gap: var(--margen-defecto, 1rem);
+}
+
+.carrusel-filtros__lista {
+    display: flex;
+    flex: 1;
+    gap: var(--margen-defecto, 1rem);
+    overflow: hidden;
+    scroll-behavior: smooth;
+}
+
+.carrusel-filtros__boton {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--barra, #3F1D0E);
+    color: var(--blanco-simple, #FFF);
+    cursor: pointer;
+}
+
+.carrusel-filtros__boton:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}

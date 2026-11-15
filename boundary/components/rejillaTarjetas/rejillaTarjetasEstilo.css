@@ -1,0 +1,2 @@
+:host { display: block; }
+.rejilla-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--margen-defecto, 1rem); }

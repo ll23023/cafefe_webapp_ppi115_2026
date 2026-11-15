@@ -1,0 +1,3 @@
+:host { display: block; }
+.panel { padding: var(--relleno-defecto, 15px); }
+.panel__titulo { margin: 0 0 1rem; color: var(--barra, #3F1D0E); }

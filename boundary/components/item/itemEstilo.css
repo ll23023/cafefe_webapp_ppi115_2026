@@ -1,0 +1,29 @@
+:host {
+    display: block;
+}
+
+.item {
+    display: flex;
+    gap: var(--margen-defecto, 1rem);
+    align-items: center;
+    padding: var(--relleno-defecto, 15px);
+    border: 1px solid var(--primario-primer-color, #B79970);
+    border-radius: var(--radio-borde, 10px);
+    background: var(--fondo-pagina-input, #FEFBF8);
+}
+
+.item__imagen {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+}
+
+.item__contenido {
+    min-width: 0;
+}
+
+.item__titulo,
+.item__descripcion,
+.item__precio {
+    margin: 0;
+}

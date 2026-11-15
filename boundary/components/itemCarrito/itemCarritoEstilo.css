@@ -1,0 +1,7 @@
+:host { display: block; }
+.item-carrito { display: flex; align-items: center; gap: 0.75rem; padding: var(--relleno-defecto, 15px); border: 1px solid var(--primario-primer-color, #B79970); border-radius: var(--radio-borde, 10px); background: var(--fondo-pagina-input, #FEFBF8); }
+.item-carrito__imagen { width: 4rem; height: 4rem; object-fit: cover; }
+.item-carrito__separador { width: 1px; align-self: stretch; background: var(--spinner-lineas-growl2, #FBF7F4); }
+.item-carrito__contenido { flex: 1; min-width: 0; }
+.item-carrito__titulo, .item-carrito__descripcion, .item-carrito__precio { margin: 0; }
+.item-carrito__eliminar { border: 0; border-radius: 50%; color: var(--blanco-simple, #FFF); background: var(--eliminar, #AE303B); cursor: pointer; }

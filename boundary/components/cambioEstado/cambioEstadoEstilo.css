@@ -1,0 +1,20 @@
+:host {
+    display: inline-block;
+}
+
+.cambio-estado {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cambio-estado__checkbox {
+    width: 1.5rem;
+    height: 1.5rem;
+    accent-color: var(--estado-completo, #A8B89F);
+}
+
+.cambio-estado__checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

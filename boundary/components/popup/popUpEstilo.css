@@ -1,0 +1,13 @@
+:host { display: contents; }
+.popup { width: min(90vw, 30rem); padding: 1.5rem; border: 0; border-radius: var(--radio-borde, 10px); color: var(--barra, #3F1D0E); background: var(--fondo-pagina-input, #FEFBF8); }
+.popup::backdrop { background: rgb(0 0 0 / 35%); }
+.popup__cerrar { float: right; border: 0; background: transparent; font-size: 1.25rem; cursor: pointer; }
+.popup__titulo { margin: 0 2rem 0.75rem 0; }
+.popup__descripcion { margin: 0 0 1rem; }
+.popup__acciones { display: flex; gap: 0.5rem; justify-content: var(--popup-alineacion, flex-end); }
+.popup__acciones button { padding: 0.5rem 0.75rem; border: 0; border-radius: var(--radio-borde, 10px); cursor: pointer; }
+.popup__cancelar { color: var(--barra, #3F1D0E); background: var(--deshacer-volver, #F8F3E9); }
+.popup__aceptar { color: var(--blanco-simple, #FFF); background: var(--barra, #3F1D0E); }
+.popup__acciones[data-alineacion="izquierda"] { justify-content: flex-start; }
+.popup__acciones[data-alineacion="centrada"] { justify-content: center; }
+.popup__acciones[data-alineacion="derecha"] { justify-content: flex-end; }
