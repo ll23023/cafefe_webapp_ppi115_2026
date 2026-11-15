@@ -5,9 +5,11 @@
  */
 
 class CustomBotonCircular extends HTMLElement {
-    
     static observedAttributes = ['disabled', 'aria-label', 'icono', 'texto', 'color'];
+    static _template;
 
+    _isRendered = false;
+    _renderPromise;
     #button;
     #barras;
     #icono;
@@ -15,34 +17,59 @@ class CustomBotonCircular extends HTMLElement {
 
     constructor() {
         super();
-
         this.attachShadow({ mode: 'open' });
-
-        const template = document.getElementById('custom-boton-circular-template');
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-        this.#button = this.shadowRoot.querySelector('.boton-circular');
-        this.#barras = this.shadowRoot.querySelectorAll('.boton-circular__barra');
-        this.#icono = this.shadowRoot.querySelector('.boton-circular__icono');
-        this.#texto = this.shadowRoot.querySelector('.boton-circular__texto');
-
-        this.#button.addEventListener('click', (evento) => {
-            evento.stopPropagation();
-            this.dispatchEvent(new MouseEvent('click', {
-                bubbles: true,
-                composed: true,
-                cancelable: true,
-                detail: evento.detail
-            }));
-        });
     }
 
-    connectedCallback() {
+    async _getTemplate() {
+        if (!CustomBotonCircular._template) {
+            CustomBotonCircular._template = fetch('/boundary/components/botonCircular/botonCircularPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[boton-circular-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de botón circular.');
+                    return template;
+                });
+        }
+        return CustomBotonCircular._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this.#button = this.shadowRoot.querySelector('.boton-circular');
+                this.#barras = this.shadowRoot.querySelectorAll('.boton-circular__barra');
+                this.#icono = this.shadowRoot.querySelector('.boton-circular__icono');
+                this.#texto = this.shadowRoot.querySelector('.boton-circular__texto');
+                this.#button.addEventListener('click', (evento) => {
+                    evento.stopPropagation();
+                    this.dispatchEvent(new MouseEvent('click', {
+                        bubbles: true,
+                        composed: true,
+                        cancelable: true,
+                        detail: evento.detail
+                    }));
+                });
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
         this.#adoptarPropiedades();
         this.#render();
     }
 
+    connectedCallback() {
+        this._renderElement().catch((error) => console.error(error));
+    }
+
     attributeChangedCallback() {
-        if (this.#button) this.#render();
+        if (this.isConnected && this._isRendered) {
+            this._renderElement().catch((error) => console.error(error));
+        }
     }
 
     get icono() {
@@ -74,7 +101,7 @@ class CustomBotonCircular extends HTMLElement {
     }
 
     get disabled() {
-        return this.#button.disabled;
+        return this.#button?.disabled ?? this.hasAttribute('disabled');
     }
 
     set disabled(valor) {
@@ -82,7 +109,13 @@ class CustomBotonCircular extends HTMLElement {
     }
 
     click() {
-        this.#button.click();
+        if (this.#button) {
+            this.#button.click();
+        } else {
+            this._renderElement()
+                .then(() => this.#button.click())
+                .catch((error) => console.error(error));
+        }
     }
 
     #adoptarPropiedades() {

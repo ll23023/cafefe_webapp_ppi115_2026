@@ -5,7 +5,6 @@
  */
 
 class CustomText extends HTMLElement {
-    
     static observedAttributes = [
         'label',
         'value',
@@ -19,71 +18,93 @@ class CustomText extends HTMLElement {
     ];
 
     static #contador = 0;
+    static _template;
 
+    _isRendered = false;
+    _renderPromise;
     #container;
     #label;
     #labelText;
     #input;
     #message;
     #messageText;
+    #inicializado = false;
 
     constructor() {
         super();
-
         this.attachShadow({ mode: 'open' });
-
-        // Se clona el contenido de la plantilla y se inserta en el espacio aislado.
-        const template = document.getElementById('custom-text-template');
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-        // Referencias internas dentro del shadowRoot
-        this.#container = this.shadowRoot.querySelector('.custom-text');
-        this.#label = this.shadowRoot.querySelector('.custom-text__label');
-        this.#labelText = this.shadowRoot.querySelector('.custom-text__label-text');
-        this.#input = this.shadowRoot.querySelector('.custom-text__input');
-        this.#message = this.shadowRoot.querySelector('.custom-text__message');
-        this.#messageText = this.shadowRoot.querySelector('.custom-text__message-text');
-
-        // Vinculación accesible entre label e input dentro del Shadow DOM
-        const inputId = `custom-text-${++CustomText.#contador}`;
-        this.#input.id = inputId;
-        this.#label.htmlFor = inputId;
-
-        // Reenvío de eventos hacia el componente host (<custom-text>)
-        this.#input.addEventListener('input', () => {
-            this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
-        });
-
-        this.#input.addEventListener('change', () => {
-            this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
-        });
-
-        // Re-renderizar si se insertan o quitan nodos en los slots
-        this.shadowRoot.querySelectorAll('slot').forEach((slot) => {
-            slot.addEventListener('slotchange', () => this.#render());
-        });
     }
 
-    connectedCallback() {
-        const valorInicial = this.getAttribute('value');
-        if (valorInicial !== null) {
-            this.#input.value = valorInicial;
+    async _getTemplate() {
+        if (!CustomText._template) {
+            CustomText._template = fetch('/boundary/components/text/textPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[text-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de text.');
+                    return template;
+                });
+        }
+        return CustomText._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this.#container = this.shadowRoot.querySelector('.custom-text');
+                this.#label = this.shadowRoot.querySelector('.custom-text__label');
+                this.#labelText = this.shadowRoot.querySelector('.custom-text__label-text');
+                this.#input = this.shadowRoot.querySelector('.custom-text__input');
+                this.#message = this.shadowRoot.querySelector('.custom-text__message');
+                this.#messageText = this.shadowRoot.querySelector('.custom-text__message-text');
+
+                const inputId = `custom-text-${++CustomText.#contador}`;
+                this.#input.id = inputId;
+                this.#label.htmlFor = inputId;
+                this.#input.addEventListener('input', () => {
+                    this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+                });
+                this.#input.addEventListener('change', () => {
+                    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+                });
+                this.shadowRoot.querySelectorAll('slot').forEach((slot) => {
+                    slot.addEventListener('slotchange', () => {
+                        this._renderElement().catch((error) => console.error(error));
+                    });
+                });
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
+        if (!this.#inicializado) {
+            const valorInicial = this.getAttribute('value');
+            if (valorInicial !== null) this.#input.value = valorInicial;
+            this.#inicializado = true;
         }
         this.#render();
     }
 
+    connectedCallback() {
+        this._renderElement().catch((error) => console.error(error));
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue === newValue || !this.#input) return;
+        if (oldValue === newValue || !this.isConnected || !this._isRendered) return;
 
         if (name === 'value') {
             this.#input.value = newValue ?? '';
         }
 
-        this.#render();
+        this._renderElement().catch((error) => console.error(error));
     }
 
     get value() {
-        return this.#input ? this.#input.value : (this.getAttribute('value') ?? '');
+        return this.#input?.value ?? this.getAttribute('value') ?? '';
     }
 
     set value(val) {

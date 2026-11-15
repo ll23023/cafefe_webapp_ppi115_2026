@@ -4,21 +4,45 @@
  * @author MikeLB
  */
 class ContenidoDinamico extends HTMLElement {
-    #contenido;
+    static _template;
+
+    _isRendered = false;
+    _renderPromise;
+
     constructor() {
-        // Se utiliza para implementar la herencia de la clase HTMLElement y así poder utilizar sus propiedades y métodos.
         super();
-
-        // Se utiliza para crear un espacio aislado donde se puede insertar contenido.
         this.attachShadow({ mode: 'open' });
+    }
 
-        // Se utiliza para clonar el contenido de la plantilla y insertarlo en el espacio aislado.
-        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/boundary/components/contenidoDinamico/contenidoDinamicoEstilo.css"><section class="contenido-dinamico"><slot></slot></section>';
-        this.#contenido = this.shadowRoot.querySelector('.contenido-dinamico');
+    async _getTemplate() {
+        if (!ContenidoDinamico._template) {
+            ContenidoDinamico._template = fetch('/boundary/components/contenidoDinamico/contenidoDinamicoPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[contenido-dinamico-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de contenido dinámico.');
+                    return template;
+                });
+        }
+        return ContenidoDinamico._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
     }
 
     connectedCallback() {
-        console.log('ContenidoDinamico connected');
+        this._renderElement().catch((error) => console.error(error));
     }
 
     mostrar(panel) {

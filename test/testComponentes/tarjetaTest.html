@@ -42,12 +42,6 @@
         <custom-tarjeta titulo="Producto no disponible" descripcion="Por el momento no se puede agregar." precio="$4.00" disabled></custom-tarjeta>
     </main>
 
-    <script type="module">
-        import { registrarComponentes } from '/test/helpers/registrarComponentes.js';
-        await registrarComponentes([
-            '/boundary/components/botonCircular/botonCircularPlantilla.html',
-            '/boundary/components/tarjeta/tarjetaPlantilla.html'
-        ]);
-    </script>
+    <script type="module" src="/boundary/main.js"></script>
 </body>
 </html>

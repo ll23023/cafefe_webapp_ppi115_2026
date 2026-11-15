@@ -7,7 +7,10 @@
 class CustomCheckbox extends HTMLElement {
 
     static observedAttributes = ['label', 'checked', 'value', 'disabled', 'required', 'name', 'indeterminate'];
+    static _template;
 
+    _isRendered = false;
+    _renderPromise;
     #input;
     #label;
     #labelText;
@@ -16,28 +19,49 @@ class CustomCheckbox extends HTMLElement {
 
     constructor() {
         super();
-
         this.attachShadow({ mode: 'open' });
-
-        const template = document.getElementById('custom-checkbox-template');
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-        this.#input = this.shadowRoot.querySelector('.custom-checkbox__input');
-        this.#label = this.shadowRoot.querySelector('.custom-checkbox__label');
-        this.#labelText = this.shadowRoot.querySelector('.custom-checkbox__label-text');
-        this.#slot = this.shadowRoot.querySelector('slot');
-
-        for (const tipo of ['input', 'change']) {
-            this.#input.addEventListener(tipo, (evento) => {
-                evento.stopPropagation();
-                this.dispatchEvent(new Event(tipo, { bubbles: true, composed: true }));
-            });
-        }
-
-        this.#slot.addEventListener('slotchange', () => this.#render());
     }
 
-    connectedCallback() {
+    async _getTemplate() {
+        if (!CustomCheckbox._template) {
+            CustomCheckbox._template = fetch('/boundary/components/checkbox/checkboxPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[checkbox-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de checkbox.');
+                    return template;
+                });
+        }
+        return CustomCheckbox._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this.#input = this.shadowRoot.querySelector('.custom-checkbox__input');
+                this.#label = this.shadowRoot.querySelector('.custom-checkbox__label');
+                this.#labelText = this.shadowRoot.querySelector('.custom-checkbox__label-text');
+                this.#slot = this.shadowRoot.querySelector('slot');
+
+                for (const tipo of ['input', 'change']) {
+                    this.#input.addEventListener(tipo, (evento) => {
+                        evento.stopPropagation();
+                        this.dispatchEvent(new Event(tipo, { bubbles: true, composed: true }));
+                    });
+                }
+
+                this.#slot.addEventListener('slotchange', () => {
+                    this._renderElement().catch((error) => console.error(error));
+                });
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
         if (!this.#inicializado) {
             this.#input.checked = this.hasAttribute('checked');
             this.#input.indeterminate = this.hasAttribute('indeterminate');
@@ -46,8 +70,12 @@ class CustomCheckbox extends HTMLElement {
         this.#render();
     }
 
+    connectedCallback() {
+        this._renderElement().catch((error) => console.error(error));
+    }
+
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {
-        if (valorAnterior === valorNuevo || !this.#input) return;
+        if (valorAnterior === valorNuevo || !this.isConnected || !this._isRendered) return;
 
         if (nombre === 'checked') {
             this.#input.checked = valorNuevo !== null;
@@ -58,15 +86,16 @@ class CustomCheckbox extends HTMLElement {
     }
 
     get checked() {
-        return this.#input.checked;
+        return this.#input?.checked ?? this.hasAttribute('checked');
     }
 
     set checked(valor) {
-        this.#input.checked = Boolean(valor);
+        if (this.#input) this.#input.checked = Boolean(valor);
+        else this.toggleAttribute('checked', Boolean(valor));
     }
 
     get value() {
-        return this.#input.value;
+        return this.#input?.value ?? this.getAttribute('value') ?? 'on';
     }
 
     set value(valor) {
@@ -74,11 +103,12 @@ class CustomCheckbox extends HTMLElement {
     }
 
     get indeterminate() {
-        return this.#input.indeterminate;
+        return this.#input?.indeterminate ?? this.hasAttribute('indeterminate');
     }
 
     set indeterminate(valor) {
-        this.#input.indeterminate = Boolean(valor);
+        if (this.#input) this.#input.indeterminate = Boolean(valor);
+        else this.toggleAttribute('indeterminate', Boolean(valor));
     }
 
     #tieneContenidoEnSlot() {

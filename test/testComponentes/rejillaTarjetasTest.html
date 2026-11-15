@@ -9,14 +9,6 @@
 </head>
 
 <body>
-    <template id="custom-boton-circular-template">
-        <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
-        <button class="boton-circular" type="button" aria-label="Agregar"><slot><span class="boton-circular__barra boton-circular__barra--horizontal"></span><span class="boton-circular__barra boton-circular__barra--vertical"></span></slot></button>
-    </template>
-    <template id="custom-tarjeta-template">
-        <link rel="stylesheet" href="/boundary/components/tarjeta/tarjetaEstilo.css">
-        <article class="tarjeta"><img class="tarjeta__imagen" src="/assets/images/tarjetaImagenes/cafeNormal.jpeg" alt=""><div class="tarjeta__contenido"><h2 class="tarjeta__titulo"></h2><p class="tarjeta__descripcion"></p><slot></slot></div><footer class="tarjeta__pie"><span class="tarjeta__precio"></span><custom-boton-circular class="tarjeta__agregar" aria-label="Agregar producto"></custom-boton-circular></footer></article>
-    </template>
     <h1>Rejilla de tarjetas</h1><rejilla-tarjetas
         registros='[{"titulo":"Cafe","descripcion":"Tueste medio","precio":"$3"},{"titulo":"Chocolate","descripcion":"Con leche","precio":"$4"}]'></rejilla-tarjetas>
     <script type="module" src="/boundary/main.js"></script>

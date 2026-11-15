@@ -5,9 +5,11 @@
  */
 
 class SpinnerNumerico extends HTMLElement {
-    
     static observedAttributes = ['min', 'max', 'step', 'value', 'disabled', 'readonly', 'required', 'name', 'label'];
+    static _template;
 
+    _isRendered = false;
+    _renderPromise;
     #input;
     #menos;
     #mas;
@@ -15,29 +17,47 @@ class SpinnerNumerico extends HTMLElement {
 
     constructor() {
         super();
-
         this.attachShadow({ mode: 'open' });
-
-        const template = document.getElementById('spinner-numerico-template');
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-        this.#input = this.shadowRoot.querySelector('.spinner-numerico__input');
-        this.#menos = this.shadowRoot.querySelector('.spinner-numerico__boton--menos');
-        this.#mas = this.shadowRoot.querySelector('.spinner-numerico__boton--mas');
-
-        this.#menos.addEventListener('click', () => this.#mover(-1));
-        this.#mas.addEventListener('click', () => this.#mover(1));
-
-        for (const tipo of ['input', 'change']) {
-            this.#input.addEventListener(tipo, (evento) => {
-                evento.stopPropagation();
-                this.#actualizarBotones();
-                this.dispatchEvent(new Event(tipo, { bubbles: true, composed: true }));
-            });
-        }
     }
 
-    connectedCallback() {
+    async _getTemplate() {
+        if (!SpinnerNumerico._template) {
+            SpinnerNumerico._template = fetch('/boundary/components/spinnerNumerico/spinnerNumericoPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[spinner-numerico-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de spinner numérico.');
+                    return template;
+                });
+        }
+        return SpinnerNumerico._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this.#input = this.shadowRoot.querySelector('.spinner-numerico__input');
+                this.#menos = this.shadowRoot.querySelector('.spinner-numerico__boton--menos');
+                this.#mas = this.shadowRoot.querySelector('.spinner-numerico__boton--mas');
+                this.#menos.addEventListener('click', () => this.#mover(-1));
+                this.#mas.addEventListener('click', () => this.#mover(1));
+
+                for (const tipo of ['input', 'change']) {
+                    this.#input.addEventListener(tipo, (evento) => {
+                        evento.stopPropagation();
+                        this.#actualizarBotones();
+                        this.dispatchEvent(new Event(tipo, { bubbles: true, composed: true }));
+                    });
+                }
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
         if (!this.#inicializado) {
             this.#input.value = this.getAttribute('value') ?? this.getAttribute('min') ?? '0';
             this.#inicializado = true;
@@ -45,8 +65,12 @@ class SpinnerNumerico extends HTMLElement {
         this.#render();
     }
 
+    connectedCallback() {
+        this._renderElement().catch((error) => console.error(error));
+    }
+
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {
-        if (valorAnterior === valorNuevo || !this.#input) return;
+        if (valorAnterior === valorNuevo || !this.isConnected || !this._isRendered) return;
 
         if (nombre === 'value') {
             this.#input.value = valorNuevo ?? '';
@@ -55,7 +79,7 @@ class SpinnerNumerico extends HTMLElement {
     }
 
     get value() {
-        return this.#input.value;
+        return this.#input?.value ?? this.getAttribute('value') ?? this.getAttribute('min') ?? '0';
     }
 
     set value(valor) {

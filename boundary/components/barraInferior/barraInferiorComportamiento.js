@@ -7,32 +7,58 @@
 class CustomBarraInferior extends HTMLElement {
 
     static observedAttributes = ['texto', 'texto-secundario', 'texto-primario'];
+    static _template;
 
+    _isRendered = false;
+    _renderPromise;
     #texto;
     #secundario;
     #primario;
 
     constructor() {
         super();
-
         this.attachShadow({ mode: 'open' });
-
-        const template = document.getElementById('custom-barra-inferior-template');
-        this.shadowRoot.appendChild(document.importNode(template.content, true));
-
-        this.#texto = this.shadowRoot.querySelector('.barra-inferior__texto');
-        this.#secundario = this.shadowRoot.querySelector('.barra-inferior__boton--secundario');
-        this.#primario = this.shadowRoot.querySelector('.barra-inferior__boton--primario');
     }
 
-    connectedCallback() {
+    async _getTemplate() {
+        if (!CustomBarraInferior._template) {
+            CustomBarraInferior._template = fetch('/boundary/components/barraInferior/barraInferiorPlantilla.html')
+                .then((response) => {
+                    if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
+                    return response.text();
+                })
+                .then((html) => {
+                    const template = new DOMParser().parseFromString(html, 'text/html')
+                        .querySelector('[barra-inferior-plantilla]');
+                    if (!template) throw new Error('No se encontró la plantilla de barra inferior.');
+                    return template;
+                });
+        }
+        return CustomBarraInferior._template;
+    }
+
+    async _renderElement() {
+        if (!this._renderPromise) {
+            this._renderPromise = this._getTemplate().then((template) => {
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                this.#texto = this.shadowRoot.querySelector('.barra-inferior__texto');
+                this.#secundario = this.shadowRoot.querySelector('.barra-inferior__boton--secundario');
+                this.#primario = this.shadowRoot.querySelector('.barra-inferior__boton--primario');
+                this._isRendered = true;
+            });
+        }
+        await this._renderPromise;
         this.#adoptarPropiedades();
         this.#render();
     }
 
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {
-        if (valorAnterior === valorNuevo || !this.#texto) return;
-        this.#render();
+        if (valorAnterior === valorNuevo || !this.isConnected || !this._isRendered) return;
+        this._renderElement().catch((error) => console.error(error));
+    }
+
+    connectedCallback() {
+        this._renderElement().catch((error) => console.error(error));
     }
 
     get botonSecundario() {

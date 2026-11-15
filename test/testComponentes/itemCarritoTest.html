@@ -9,18 +9,6 @@
 </head>
 
 <body>
-    <template id="spinner-numerico-template">
-        <link rel="stylesheet" href="/boundary/components/spinnerNumerico/spinnerNumericoEstilo.css">
-        <div class="spinner-numerico">
-            <button class="spinner-numerico__boton spinner-numerico__boton--menos" type="button" aria-label="Disminuir">-</button>
-            <input class="spinner-numerico__input" type="number" aria-label="Cantidad">
-            <button class="spinner-numerico__boton spinner-numerico__boton--mas" type="button" aria-label="Aumentar">+</button>
-        </div>
-    </template>
-    <template id="custom-boton-circular-template">
-        <link rel="stylesheet" href="/boundary/components/botonCircular/botonCircularEstilo.css">
-        <button class="boton-circular" type="button" aria-label="Agregar"><slot><span class="boton-circular__barra boton-circular__barra--horizontal"></span><span class="boton-circular__barra boton-circular__barra--vertical"></span></slot></button>
-    </template>
     <h1>Item de carrito</h1><item-carrito id="cafe-1" titulo="Americano" descripcion="Cafe negro" precio="$2"
         cantidad="2" imagen="/assets/images/categorias/test.png"></item-carrito>
     <script type="module" src="/boundary/main.js"></script>
