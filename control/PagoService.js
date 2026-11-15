@@ -6,8 +6,6 @@ import { BaseService } from './BaseService.js';
  * @author Mil
  */
 
-import { BaseService } from './BaseService.js';
-
 export class PagoService extends BaseService {
   constructor() {
     super('pago', Pago, 'first-max');

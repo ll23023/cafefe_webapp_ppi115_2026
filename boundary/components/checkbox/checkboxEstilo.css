@@ -39,14 +39,14 @@
     width: 0.72rem;
     height: 0.4rem;
     content: '';
-    border-bottom: 3px solid var(--custom-checkbox-fondo);
-    border-left: 3px solid var(--custom-checkbox-fondo);
+    border-bottom: 3px solid var(--custom-checkbox-palomita);
+    border-left: 3px solid var(--custom-checkbox-palomita);
     opacity: 0;
     transform: translateY(-1px) rotate(-45deg);
 }
 
 .custom-checkbox__input:checked {
-    background: var(--custom-checkbox-color);
+    background: var(--custom-checkbox-fondo-checked);
 }
 
 .custom-checkbox__input:checked::after {

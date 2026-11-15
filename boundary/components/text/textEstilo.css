@@ -1,12 +1,14 @@
 :host {
-    --custom-text-borde: var(--barra, #3F1D0E);
-    --custom-text-error: var(--eliminar, #AE303B);
+    --custom-checkbox-color: var(--barra, #3F1D0E);
+    --custom-checkbox-fondo: var(--fondo-pagina-input, #FEFBF8);
+    --custom-checkbox-fondo-checked: var(--custom-checkbox-color); /* Nuevo */
+    --custom-checkbox-palomita: var(--custom-checkbox-fondo);      /* Nuevo */
+    --custom-checkbox-tamano: 1.5rem;
 
     display: block;
-    width: 100%;
-    margin-bottom: var(--margen-defecto, 1rem);
-    font-family: inherit;
     box-sizing: border-box;
+    color: var(--custom-checkbox-color);
+    font-family: inherit;
 }
 
 :host([hidden]) {
@@ -61,7 +63,7 @@
     outline: none;
     background: transparent;
     font: inherit;
-    color: var(--custom-text-borde);
+    color: var(--custom-text-input-color, var(--custom-text-borde));
 }
 
 .custom-text__input:disabled {

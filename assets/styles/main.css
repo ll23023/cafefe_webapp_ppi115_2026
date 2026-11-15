@@ -28,3 +28,72 @@
     object-fit: cover;
 }
 
+/*VISTA LOGIN*/
+
+.login-fondo {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: var(--margen-defecto);
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--barra);
+    background-image: url("../images/fondoLogin.jpeg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.login-panel {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    width: 74%;
+    max-width: 1100px;
+    min-height: 480px;
+    padding: calc(var(--relleno-defecto) * 2);
+    background-color: var(--fondo-oscuro);
+}
+
+.login-logo {
+    width: 240px;
+    max-width: 80%;
+    justify-self: center;
+    object-fit: contain;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--margen-defecto);
+    width: 100%;
+    max-width: 290px;
+    justify-self: center;
+}
+
+.login-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--margen-defecto);
+}
+
+.login-form custom-text {
+    --custom-text-borde: var(--blanco-simple);
+    --custom-text-input-color: var(--barra);
+    --margen-defecto: 0;
+}
+
+.login-form custom-checkbox {
+    --custom-checkbox-color: var(--blanco-simple);    
+    --custom-checkbox-fondo: transparent;              
+    --custom-checkbox-fondo-checked: transparent;     
+    --custom-checkbox-palomita: var(--blanco-simple);  
+}
+
+.login-form custom-boton-redondeado {
+    --barra: var(--blanco-simple);
+    --primario-primer-color: transparent;         
+}
+
+/*para otras vistas poner aqui abajo*/

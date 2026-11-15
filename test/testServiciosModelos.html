@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pruebas unitarias de servicios y modelos</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f7f4ef;
+      color: #29231f;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: 1.65rem;
+    }
+
+    .resumen {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid #ded5c9;
+      border-radius: 0.75rem;
+      background: #fffdf9;
+      box-shadow: 0 3px 12px #29231f12;
+    }
+
+    .contador {
+      font-weight: 700;
+    }
+
+    #estado {
+      margin-left: auto;
+      color: #62574e;
+    }
+
+    .grupo {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid #ded5c9;
+      border-radius: 0.75rem;
+      background: #fffdf9;
+    }
+
+    .grupo h2 {
+      margin: 0 0 0.65rem;
+      font-size: 1.1rem;
+    }
+
+    .grupo ol {
+      display: grid;
+      gap: 0.4rem;
+      margin: 0;
+      padding-left: 1.5rem;
+    }
+
+    .resultado {
+      overflow-wrap: anywhere;
+    }
+
+    .resultado.ok {
+      color: #176b3a;
+    }
+
+    .resultado.error {
+      color: #a5212d;
+    }
+
+    .detalle-error {
+      display: block;
+      margin-top: 0.2rem;
+      color: #79202a;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.86rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pruebas unitarias: servicios y modelos</h1>
+    <section class="resumen" aria-label="Resumen de pruebas" aria-live="polite">
+      <span class="contador">Total: <span id="total">0</span></span>
+      <span class="contador">Exitosas: <span id="exitosas">0</span></span>
+      <span class="contador">Fallidas: <span id="fallidas">0</span></span>
+      <span id="estado">Preparando pruebas…</span>
+    </section>
+    <div id="resultados"></div>
+  </main>
+
+  <script type="module">
+    import { ProductoService } from '../control/ProductoService.js';
+    import { FacturaService } from '../control/FacturaService.js';
+    import { OrdenProductoService } from '../control/OrdenProductoService.js';
+    import { FacturaOrdenProductoService } from '../control/FacturaOrdenProductoService.js';
+    import { OrdenService } from '../control/OrdenService.js';
+    import { EmpleadoRolService } from '../control/EmpleadoRolService.js';
+    import { RolService } from '../control/RolService.js';
+    import { EmpleadoService } from '../control/EmpleadoService.js';
+    import { PagoService } from '../control/PagoService.js';
+    import { PagoDetalleService } from '../control/PagoDetalleService.js';
+    import { ProductoModel } from '../boundary/ProductoModel.js';
+    import { FacturaModel } from '../boundary/FacturaModel.js';
+    import { OrdenProductoModel } from '../boundary/OrdenProductoModel.js';
+    import { FacturaOrdenProductoModel } from '../boundary/FacturaOrdenProductoModel.js';
+    import { OrdenModel } from '../boundary/OrdenModel.js';
+    import { EmpleadoRolModel } from '../boundary/EmpleadoRolModel.js';
+    import { RolModel } from '../boundary/RolModel.js';
+    import { EmpleadoModel } from '../boundary/EmpleadoModel.js';
+    import { PagoModel } from '../boundary/PagoModel.js';
+    import { PagoDetalleModel } from '../boundary/PagoDetalleModel.js';
+
+    const nodos = {
+      total: document.querySelector('#total'),
+      exitosas: document.querySelector('#exitosas'),
+      fallidas: document.querySelector('#fallidas'),
+      estado: document.querySelector('#estado'),
+      resultados: document.querySelector('#resultados'),
+    };
+    const conteo = { total: 0, exitosas: 0, fallidas: 0 };
+    let listaActual = null;
+
+    function actualizarResumen() {
+      nodos.total.textContent = String(conteo.total);
+      nodos.exitosas.textContent = String(conteo.exitosas);
+      nodos.fallidas.textContent = String(conteo.fallidas);
+    }
+
+    function assert(condicion, mensaje) {
+      if (!condicion) throw new Error(mensaje || 'La condición no se cumplió');
+    }
+
+    function deepEqual(actual, esperado) {
+      if (Object.is(actual, esperado)) return true;
+      if (actual === null || esperado === null || typeof actual !== 'object' || typeof esperado !== 'object') {
+        return false;
+      }
+      if (Array.isArray(actual) !== Array.isArray(esperado)) return false;
+      const clavesActuales = Object.keys(actual);
+      const clavesEsperadas = Object.keys(esperado);
+      return clavesActuales.length === clavesEsperadas.length &&
+        clavesEsperadas.every((clave) =>
+          Object.hasOwn(actual, clave) && deepEqual(actual[clave], esperado[clave]),
+        );
+    }
+
+    function mostrarValor(valor) {
+      if (typeof valor === 'string') return JSON.stringify(valor);
+      try {
+        return JSON.stringify(valor);
+      } catch {
+        return String(valor);
+      }
+    }
+
+    function assertEqual(actual, esperado, mensaje) {
+      assert(
+        deepEqual(actual, esperado),
+        `${mensaje || 'Los valores no coinciden'}\nEsperado: ${mostrarValor(esperado)}\nActual: ${mostrarValor(actual)}`,
+      );
+    }
+
+    async function test(nombre, fn) {
+      conteo.total += 1;
+      actualizarResumen();
+      const fila = document.createElement('li');
+      fila.className = 'resultado';
+      fila.textContent = `${nombre}: ejecutando…`;
+      listaActual.append(fila);
+
+      try {
+        await fn();
+        conteo.exitosas += 1;
+        fila.classList.add('ok');
+        fila.textContent = `EXITO: ${nombre}`;
+      } catch (error) {
+        conteo.fallidas += 1;
+        fila.classList.add('error');
+        fila.replaceChildren(document.createTextNode(`FRACASO: ${nombre}`));
+        const detalle = document.createElement('span');
+        detalle.className = 'detalle-error';
+        detalle.textContent = error instanceof Error ? error.message : String(error);
+        fila.append(detalle);
+      }
+      actualizarResumen();
+    }
+
+    async function grupo(nombre, ejecutar) {
+      const seccion = document.createElement('section');
+      seccion.className = 'grupo';
+      const titulo = document.createElement('h2');
+      titulo.textContent = nombre;
+      const lista = document.createElement('ol');
+      seccion.append(titulo, lista);
+      nodos.resultados.append(seccion);
+      listaActual = lista;
+      await ejecutar();
+    }
+
+    async function mockFetch(responder, ejecutar) {
+      const fetchOriginal = globalThis.fetch;
+      const llamadas = [];
+      globalThis.fetch = async (url, opciones = {}) => {
+        const llamada = {
+          url: String(url),
+          opciones: {
+            ...opciones,
+            headers: { ...(opciones.headers || {}) },
+          },
+        };
+        llamadas.push(llamada);
+        return responder(llamada.url, llamada.opciones, llamada);
+      };
+
+      try {
+        return await ejecutar(llamadas);
+      } finally {
+        globalThis.fetch = fetchOriginal;
+      }
+    }
+
+    function respuesta({ status = 200, body = null, headers = {} } = {}) {
+      const cabeceras = new Headers(headers);
+      return {
+        ok: status >= 200 && status < 300,
+        status,
+        headers: cabeceras,
+        async json() {
+          return body;
+        },
+        async text() {
+          return typeof body === 'string' ? body : body == null ? '' : JSON.stringify(body);
+        },
+      };
+    }
+
+    function rutaDe(llamada) {
+      return new URL(llamada.url).pathname;
+    }
+
+    function parametrosDe(llamada) {
+      return new URL(llamada.url).searchParams;
+    }
+
+    function cuerpoDe(llamada) {
+      return JSON.parse(llamada.opciones.body);
+    }
+
+    const servicios = [
+      {
+        nombre: 'ProductoService',
+        endpoint: 'producto',
+        Servicio: ProductoService,
+        paginacion: ['first', 'max'],
+        entrada: (servicio) => new servicio.EntityClass({
+          nombre: ' Café ',
+          precioSugerido: 3,
+        }),
+        esperadoPost: {
+          nombre: 'Café',
+          activo: true,
+          comentarios: '',
+          precioSugerido: 3,
+          caracteristicas: [],
+          tiposProducto: [],
+          descuentos: [],
+        },
+        esperadoPut: {
+          nombre: 'Café',
+          activo: true,
+          comentarios: '',
+          precioSugerido: 3,
+          caracteristicas: [],
+          tiposProducto: [],
+          descuentos: [],
+        },
+        extra: { caracteristicas: [], tiposProducto: [], descuentos: [] },
+      },
+      {
+        nombre: 'FacturaService',
+        endpoint: 'factura',
+        Servicio: FacturaService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          idCaja: { idCaja: 'caja-1' },
+          idEmpleadoRol: { idEmpleadoRol: 'empleado-rol-1' },
+          cliente: 'Ada',
+          estado: 'PENDIENTE',
+          observaciones: 'Nota',
+        }),
+        esperadoPost: {
+          idCaja: 'caja-1',
+          idEmpleadoRol: 'empleado-rol-1',
+          cliente: 'Ada',
+          estado: 'PENDIENTE',
+          observaciones: 'Nota',
+        },
+        esperadoPut: {
+          idCaja: 'caja-1',
+          idEmpleadoRol: 'empleado-rol-1',
+          cliente: 'Ada',
+          estado: 'PENDIENTE',
+          observaciones: 'Nota',
+        },
+      },
+      {
+        nombre: 'OrdenProductoService',
+        endpoint: 'orden_producto',
+        Servicio: OrdenProductoService,
+        paginacion: ['desde', 'hasta'],
+        entrada: () => ({
+          precio: 4,
+          observaciones: 'Nota',
+          idOrden: { idOrden: 'orden-1' },
+          idProducto: { idProducto: 'producto-1' },
+        }),
+        esperadoPost: {
+          precio: 4,
+          observaciones: 'Nota',
+          idOrden: { idOrden: 'orden-1' },
+          idProducto: { idProducto: 'producto-1' },
+        },
+        esperadoPut: {
+          precio: 4,
+          observaciones: 'Nota',
+          idOrden: { idOrden: 'orden-1' },
+          idProducto: { idProducto: 'producto-1' },
+        },
+      },
+      {
+        nombre: 'FacturaOrdenProductoService',
+        endpoint: 'factura-orden-producto',
+        Servicio: FacturaOrdenProductoService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          idFactura: { idFactura: 'factura-1' },
+          idOrdenProducto: { idOrdenProducto: 'orden-producto-1' },
+          precio: 5,
+          observaciones: 'Nota',
+        }),
+        esperadoPost: {
+          idFactura: 'factura-1',
+          idOrdenProducto: 'orden-producto-1',
+          precio: 5,
+          observaciones: 'Nota',
+        },
+        esperadoPut: {
+          idFactura: 'factura-1',
+          idOrdenProducto: 'orden-producto-1',
+          precio: 5,
+          observaciones: 'Nota',
+        },
+        filtro: { metodo: 'findByFactura', clave: 'idFactura', valor: 'factura-2' },
+      },
+      {
+        nombre: 'OrdenService',
+        endpoint: 'orden',
+        Servicio: OrdenService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({ idEmpleadoRol: { idEmpleadoRol: 'empleado-rol-1' } }),
+        esperadoPost: { idEmpleadoRol: 'empleado-rol-1' },
+        esperadoPut: { idEmpleadoRol: 'empleado-rol-1' },
+      },
+      {
+        nombre: 'EmpleadoRolService',
+        endpoint: 'empleado-rol',
+        Servicio: EmpleadoRolService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          idEmpleado: { idEmpleado: 'empleado-1' },
+          idRol: { idRol: 'rol-1' },
+          activo: false,
+          observaciones: 'Nota',
+        }),
+        esperadoPost: {
+          idEmpleado: 'empleado-1',
+          idRol: 'rol-1',
+          activo: false,
+          observaciones: 'Nota',
+        },
+        esperadoPut: {
+          idEmpleado: 'empleado-1',
+          idRol: 'rol-1',
+          activo: false,
+          observaciones: 'Nota',
+        },
+      },
+      {
+        nombre: 'RolService',
+        endpoint: 'rol',
+        Servicio: RolService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({ nombre: 'Cajero', activo: false, observaciones: 'Nota' }),
+        esperadoPost: { idRol: null, nombre: 'Cajero', activo: false, observaciones: 'Nota' },
+        esperadoPut: { idRol: 'registro-1', nombre: 'Cajero', activo: false, observaciones: 'Nota' },
+      },
+      {
+        nombre: 'EmpleadoService',
+        endpoint: 'empleado',
+        Servicio: EmpleadoService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          nombre: 'Ada',
+          apellido: 'Lovelace',
+          activo: false,
+          comentarios: 'Nota',
+        }),
+        esperadoPost: {
+          nombre: 'Ada',
+          apellido: 'Lovelace',
+          activo: false,
+          comentarios: 'Nota',
+          roles: ['rol-1'],
+        },
+        esperadoPut: {
+          nombre: 'Ada',
+          apellido: 'Lovelace',
+          activo: false,
+          comentarios: 'Nota',
+          roles: ['rol-1'],
+        },
+        extra: ['rol-1'],
+      },
+      {
+        nombre: 'PagoService',
+        endpoint: 'pago',
+        Servicio: PagoService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          idFactura: { idFactura: 'factura-1' },
+          estado: 'PENDIENTE',
+          observaciones: 'Nota',
+        }),
+        esperadoPost: { idFactura: 'factura-1', estado: 'PENDIENTE', observaciones: 'Nota' },
+        esperadoPut: { idFactura: 'factura-1', estado: 'PENDIENTE', observaciones: 'Nota' },
+        filtro: { metodo: 'findByFactura', clave: 'idFactura', valor: 'factura-2' },
+      },
+      {
+        nombre: 'PagoDetalleService',
+        endpoint: 'pago-detalle',
+        Servicio: PagoDetalleService,
+        paginacion: ['first', 'max'],
+        entrada: () => ({
+          idPago: { idPago: 'pago-1' },
+          monto: 12.5,
+          tipoPago: 'TARJETA',
+          observaciones: 'Nota',
+          referenciaExterna: 'ref-1',
+        }),
+        esperadoPost: {
+          idPago: 'pago-1',
+          monto: 12.5,
+          tipoPago: 'TARJETA',
+          observaciones: 'Nota',
+          referenciaExterna: 'ref-1',
+        },
+        esperadoPut: {
+          idPago: 'pago-1',
+          monto: 12.5,
+          tipoPago: 'TARJETA',
+          observaciones: 'Nota',
+          referenciaExterna: 'ref-1',
+        },
+        filtro: { metodo: 'findByPago', clave: 'idPago', valor: 'pago-2' },
+      },
+    ];
+
+    for (const definicion of servicios) {
+      await grupo(`Servicio: ${definicion.nombre}`, async () => {
+        const service = new definicion.Servicio();
+
+        await test('usa el endpoint exacto e hidrata registros y total', async () => {
+          const item = { id: 'registro-1' };
+          await mockFetch(
+            () => respuesta({
+              body: [item],
+              headers: { 'Total-Records': '17' },
+            }),
+            async (llamadas) => {
+              const resultado = definicion.paginacion[0] === 'desde'
+                ? await service.findRange(2, 7)
+                : await service.findRange(2, 7);
+              assertEqual(llamadas.length, 1, 'Debe realizar una petición');
+              assertEqual(
+                rutaDe(llamadas[0]),
+                `/Cafefe/resources/v1/${definicion.endpoint}`,
+                'Endpoint inesperado',
+              );
+              assertEqual(
+                new URL(llamadas[0].url).search,
+                `?${definicion.paginacion[0]}=2&${definicion.paginacion[1]}=7`,
+                'Query de paginación incorrecto',
+              );
+              const parametros = parametrosDe(llamadas[0]);
+              assertEqual(parametros.get(definicion.paginacion[0]), '2', 'Inicio de paginación incorrecto');
+              assertEqual(parametros.get(definicion.paginacion[1]), '7', 'Límite de paginación incorrecto');
+              assertEqual(resultado.total, 17, 'Debe leer Total-Records');
+              assertEqual(resultado.registros.length, 1, 'Debe regresar el registro');
+              assert(
+                resultado.registros[0] instanceof service.EntityClass,
+                'El JSON debe hidratarse a la entidad correspondiente',
+              );
+            },
+          );
+        });
+
+        if (definicion.filtro) {
+          await test(`aplica el filtro ${definicion.filtro.clave} en query params`, async () => {
+            await mockFetch(
+              () => respuesta({ body: [], headers: { 'Total-Records': '0' } }),
+              async (llamadas) => {
+                await service[definicion.filtro.metodo](definicion.filtro.valor, 3, 8);
+                assertEqual(rutaDe(llamadas[0]), `/Cafefe/resources/v1/${definicion.endpoint}`, 'Endpoint de filtro');
+                const parametros = parametrosDe(llamadas[0]);
+                assertEqual(parametros.get('first'), '3', 'El filtro debe mantener la paginación');
+                assertEqual(parametros.get('max'), '8', 'El filtro debe mantener el tamaño');
+                assertEqual(
+                  new URL(llamadas[0].url).search,
+                  `?first=3&max=8&${definicion.filtro.clave}=${definicion.filtro.valor}`,
+                  'Query de filtro incorrecto',
+                );
+                assertEqual(
+                  parametros.get(definicion.filtro.clave),
+                  definicion.filtro.valor,
+                  'Valor del filtro incorrecto',
+                );
+              },
+            );
+          });
+        }
+
+        await test('envía POST/PUT con el DTO esperado, extrae Location y permite DELETE', async () => {
+          await mockFetch(
+            (_url, opciones) => {
+              if (opciones.method === 'POST') {
+                return respuesta({ status: 201, headers: { Location: `/api/${definicion.endpoint}/uuid-creado` } });
+              }
+              if (opciones.method === 'PUT') return respuesta({ body: { id: 'actualizado' } });
+              return respuesta({ status: 204 });
+            },
+            async (llamadas) => {
+              const entrada = definicion.entrada(service);
+              const creado = definicion.extra === undefined
+                ? await service.create(entrada)
+                : await service.create(entrada, definicion.extra);
+              assertEqual(creado, 'uuid-creado', 'Debe extraer el UUID del encabezado Location');
+
+              const actualizado = definicion.extra === undefined
+                ? await service.update('registro-1', entrada)
+                : await service.update('registro-1', entrada, definicion.extra);
+              assert(
+                actualizado instanceof service.EntityClass,
+                'La respuesta del PUT debe hidratarse como entidad',
+              );
+              await service.delete('registro-1');
+
+              assertEqual(llamadas.map((llamada) => llamada.opciones.method || 'GET'), ['POST', 'PUT', 'DELETE']);
+              assertEqual(rutaDe(llamadas[0]), `/Cafefe/resources/v1/${definicion.endpoint}`);
+              assertEqual(rutaDe(llamadas[1]), `/Cafefe/resources/v1/${definicion.endpoint}/registro-1`);
+              assertEqual(rutaDe(llamadas[2]), `/Cafefe/resources/v1/${definicion.endpoint}/registro-1`);
+              assertEqual(cuerpoDe(llamadas[0]), definicion.esperadoPost, 'DTO POST incorrecto');
+              assertEqual(cuerpoDe(llamadas[1]), definicion.esperadoPut, 'DTO PUT incorrecto');
+            },
+          );
+        });
+      });
+    }
+
+    await grupo('ApiClient: propagación de errores HTTP', async () => {
+      const service = new ProductoService();
+      for (const [status, error] of [[404, 'No existe'], [409, 'Conflicto']]) {
+        await test(`propaga HTTP ${status}`, async () => {
+          await mockFetch(
+            () => respuesta({ status, body: { error } }),
+            async () => {
+              let recibido;
+              try {
+                await service.findById('inexistente');
+              } catch (err) {
+                recibido = err;
+              }
+              assert(recibido instanceof Error, 'La petición debe rechazar con Error');
+              assertEqual(recibido.message, error, 'Mensaje HTTP propagado');
+            },
+          );
+        });
+      }
+    });
+
+    const modelos = [
+      { nombre: 'ProductoModel', Modelo: ProductoModel, id: 'idProducto', valores: { nombre: 'Válido', precioSugerido: 1 } },
+      { nombre: 'FacturaModel', Modelo: FacturaModel, id: 'idFactura', valores: { cliente: 'Cliente' } },
+      { nombre: 'OrdenProductoModel', Modelo: OrdenProductoModel, id: 'idOrdenProducto', valores: { precio: 2 } },
+      { nombre: 'FacturaOrdenProductoModel', Modelo: FacturaOrdenProductoModel, id: 'idFacturaOrdenProducto', valores: { precio: 2 } },
+      { nombre: 'OrdenModel', Modelo: OrdenModel, id: 'idOrden', valores: {} },
+      { nombre: 'EmpleadoRolModel', Modelo: EmpleadoRolModel, id: 'idEmpleadoRol', valores: {} },
+      { nombre: 'RolModel', Modelo: RolModel, id: 'idRol', valores: { nombre: 'Rol válido' } },
+      { nombre: 'EmpleadoModel', Modelo: EmpleadoModel, id: 'idEmpleado', valores: { nombre: 'Ada', apellido: 'Lovelace' } },
+      { nombre: 'PagoModel', Modelo: PagoModel, id: 'idPago', valores: {} },
+      { nombre: 'PagoDetalleModel', Modelo: PagoDetalleModel, id: 'idPagoDetalle', valores: { monto: 1, tipoPago: 'EFECTIVO' } },
+    ];
+
+    function crearModelo(definicion, max = 3) {
+      const modelo = new definicion.Modelo(max);
+      const llamadasServicio = { findRange: [], findById: [], create: [], update: [], delete: [] };
+      let debeFallarCarga = false;
+      modelo.service = {
+        async findRange(...args) {
+          llamadasServicio.findRange.push(args);
+          if (debeFallarCarga) throw new Error('Fallo de carga');
+          const cantidad = definicion.nombre === 'OrdenProductoModel'
+            ? Math.max(0, args[1] - args[0] + 1)
+            : args[1];
+          return {
+            registros: Array.from({ length: cantidad }, (_, indice) =>
+              new modelo.EntityClass({ ...definicion.valores, [definicion.id]: `registro-${indice}` }),
+            ),
+            total: 30,
+          };
+        },
+        async findById(id) {
+          llamadasServicio.findById.push(id);
+          return new modelo.EntityClass({ ...definicion.valores, [definicion.id]: id });
+        },
+        async create(...args) {
+          llamadasServicio.create.push(args);
+          return 'creado-1';
+        },
+        async update(...args) {
+          llamadasServicio.update.push(args);
+          return new modelo.EntityClass({ ...definicion.valores, [definicion.id]: args[0] });
+        },
+        async delete(id) {
+          llamadasServicio.delete.push(id);
+        },
+      };
+      return {
+        modelo,
+        llamadasServicio,
+        fallarCarga(valor) {
+          debeFallarCarga = valor;
+        },
+      };
+    }
+
+    for (const definicion of modelos) {
+      await grupo(`Modelo: ${definicion.nombre}`, async () => {
+        await test('transiciones NADA → CREAR → NADA y NADA → MODIFICAR → NADA', async () => {
+          const { modelo, llamadasServicio } = crearModelo(definicion);
+          modelo.nuevo(definicion.valores);
+          assertEqual(modelo.estado, 'CREAR', 'nuevo() debe poner estado CREAR');
+          await modelo.guardar();
+          assertEqual(modelo.estado, 'NADA', 'guardar() debe volver a NADA');
+          assertEqual(modelo.registro, null, 'guardar() debe limpiar el registro');
+          assertEqual(llamadasServicio.create.length, 1, 'guardar() debe llamar al servicio');
+
+          await modelo.seleccionar('existente-1');
+          assertEqual(modelo.estado, 'MODIFICAR', 'seleccionar() debe poner estado MODIFICAR');
+          await modelo.modificar();
+          assertEqual(modelo.estado, 'NADA', 'modificar() debe volver a NADA');
+          assertEqual(modelo.registro, null, 'modificar() debe limpiar el registro');
+          assertEqual(llamadasServicio.update.length, 1, 'modificar() debe llamar al servicio');
+          assertEqual(llamadasServicio.update[0][0], 'existente-1', 'Debe usar el ID del registro');
+        });
+
+        await test('suscribir() notifica carga, registros, error y fin de carga', async () => {
+          const contexto = crearModelo(definicion);
+          const eventos = [];
+          contexto.modelo.suscribir((modelo) => {
+            eventos.push({
+              cargando: modelo.cargando,
+              error: modelo.error,
+              registros: modelo.registros.length,
+            });
+          });
+
+          await contexto.modelo.cargar();
+          assert(eventos.some((evento) => evento.cargando), 'Debe notificar el inicio de carga');
+          assert(eventos.some((evento) => evento.registros > 0), 'Debe notificar registros actualizados');
+          assertEqual(eventos.at(-1).cargando, false, 'Debe notificar el fin de carga');
+
+          contexto.fallarCarga(true);
+          let errorRecibido;
+          try {
+            await contexto.modelo.cargar();
+          } catch (error) {
+            errorRecibido = error;
+          }
+          assertEqual(errorRecibido?.message, 'Fallo de carga', 'Debe propagar el error de servicio');
+          assertEqual(contexto.modelo.error, 'Fallo de carga', 'Debe guardar el mensaje de error');
+          assert(eventos.some((evento) => evento.error === 'Fallo de carga'), 'Debe notificar el error');
+          assertEqual(eventos.at(-1).cargando, false, 'Debe cerrar cargando aun cuando falla');
+        });
+
+        await test('siguientePagina() y anteriorPagina() conservan límites correctos', async () => {
+          const { modelo, llamadasServicio } = crearModelo(definicion);
+          await modelo.cargar();
+          await modelo.siguientePagina();
+          await modelo.anteriorPagina();
+          const rangos = llamadasServicio.findRange;
+          if (definicion.nombre === 'OrdenProductoModel') {
+            assertEqual(rangos[0], [1, 3], 'Rango inicial desde/hasta');
+            assertEqual(rangos[1], [4, 6], 'Rango de la página siguiente');
+            assertEqual(rangos[2], [1, 3], 'Rango de la página anterior');
+            assertEqual(modelo.desde, 1, 'Debe conservar el inicio de la página');
+            assertEqual(modelo.hasta, 3, 'Debe conservar el límite de la página');
+          } else {
+            const filtrosIniciales = definicion.nombre === 'PagoDetalleModel'
+              ? { idPago: null }
+              : ['FacturaOrdenProductoModel', 'PagoModel'].includes(definicion.nombre)
+                ? { idFactura: null }
+                : {};
+            assertEqual(rangos[0], [0, 3, filtrosIniciales], 'Paginación inicial first/max');
+            assertEqual(rangos[1], [3, 3, filtrosIniciales], 'Paginación siguiente');
+            assertEqual(rangos[2], [0, 3, filtrosIniciales], 'Paginación anterior');
+          }
+        });
+      });
+    }
+
+    for (const definicion of modelos.filter((item) =>
+      ['FacturaOrdenProductoModel', 'PagoModel', 'PagoDetalleModel'].includes(item.nombre),
+    )) {
+      await grupo(`Filtros: ${definicion.nombre}`, async () => {
+        await test('conserva el filtro al cargar páginas posteriores y al crear registros', async () => {
+          const { modelo, llamadasServicio } = crearModelo(definicion);
+          const esPagoDetalle = definicion.nombre === 'PagoDetalleModel';
+          const clave = esPagoDetalle ? 'idPago' : 'idFactura';
+          const metodo = esPagoDetalle ? 'cargarPorPago' : 'cargarPorFactura';
+          const idFiltrado = esPagoDetalle ? 'pago-filtrado' : 'factura-filtrada';
+
+          await modelo[metodo](idFiltrado, 0, 3);
+          await modelo.cargar(3, 3);
+          assertEqual(llamadasServicio.findRange[0][2], { [clave]: idFiltrado }, 'Filtro inicial');
+          assertEqual(llamadasServicio.findRange[1][2], { [clave]: idFiltrado }, 'Filtro al paginar');
+
+          const registro = modelo.nuevo();
+          assertEqual(registro[clave], idFiltrado, 'El filtro debe prellenar el nuevo registro');
+        });
+      });
+    }
+
+    await grupo('Validación local: ProductoModel', async () => {
+      await test('guardar() y modificar() no llaman al servicio si validar() devuelve errores', async () => {
+        const definicion = modelos.find((item) => item.nombre === 'ProductoModel');
+        const { modelo, llamadasServicio } = crearModelo(definicion);
+
+        modelo.nuevo({ nombre: '', precioSugerido: null });
+        const resultadoGuardar = await modelo.guardar();
+        assertEqual(resultadoGuardar, null, 'guardar() debe detenerse ante errores');
+        assertEqual(llamadasServicio.create.length, 0, 'No debe llamar create() si el registro es inválido');
+        assert(typeof modelo.erroresValidacion.nombre === 'string', 'Debe llenar erroresValidacion.nombre');
+        assert(typeof modelo.erroresValidacion.precioSugerido === 'string', 'Debe llenar erroresValidacion.precioSugerido');
+
+        await modelo.seleccionar('producto-invalido');
+        modelo.registro.nombre = '';
+        const resultadoModificar = await modelo.modificar();
+        assertEqual(resultadoModificar, null, 'modificar() debe detenerse ante errores');
+        assertEqual(llamadasServicio.update.length, 0, 'No debe llamar update() si el registro es inválido');
+        assert(typeof modelo.erroresValidacion.nombre === 'string', 'Debe llenar errores de modificación');
+      });
+    });
+
+    nodos.estado.textContent = conteo.fallidas === 0
+      ? 'Suite finalizada correctamente'
+      : 'Suite finalizada con fallos';
+    nodos.estado.style.color = conteo.fallidas === 0 ? '#176b3a' : '#a5212d';
+  </script>
+</body>
+</html>

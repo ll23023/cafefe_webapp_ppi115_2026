@@ -14,7 +14,8 @@ class CustomText extends HTMLElement {
         'hide-label',
         'disabled',
         'required',
-        'name'
+        'name',
+        'placeholder'
     ];
 
     static #contador = 0;
@@ -152,6 +153,9 @@ class CustomText extends HTMLElement {
         this.#container.classList.toggle('custom-text--error', hayError);
         this.#container.classList.toggle('custom-text--disabled', disabled);
         this.#input.setAttribute('aria-invalid', String(hayError));
+
+        // Placeholder (mensaje fantasma) que se puede usar a conveniencia
+        this.#input.placeholder = this.getAttribute('placeholder') ?? '';
     }
 }
 
