@@ -49,7 +49,7 @@ class ListaItems extends HTMLElement {
         for (const item of Array.isArray(items) ? items : []) {
             const elemento = document.createElement(this.getAttribute('tipo') === 'carrito' ? 'item-carrito' : 'lista-item');
             for (const atributo of this.getAttribute('tipo') === 'carrito'
-                ? ['id', 'titulo', 'descripcion', 'precio', 'imagen', 'cantidad']
+                ? ['id', 'uid', 'titulo', 'descripcion', 'precio', 'imagen', 'cantidad']
                 : ['titulo', 'descripcion', 'precio', 'imagen']) {
                 if (item?.[atributo] != null) elemento.setAttribute(atributo, item[atributo]);
             }

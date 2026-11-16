@@ -24,7 +24,7 @@ class RejillaTarjetas extends HTMLElement {
         this.#rejilla.replaceChildren();
         for (const registro of Array.isArray(registros) ? registros : []) {
             const tarjeta = document.createElement('custom-tarjeta');
-            for (const atributo of ['uid', 'imagen', 'titulo', 'descripcion', 'precio', 'variante']) {
+            for (const atributo of ['uid', 'titulo', 'descripcion', 'precio', 'variante']) {
                 if (registro?.[atributo] != null) tarjeta.setAttribute(atributo, registro[atributo]);
             }
             this.#rejilla.appendChild(tarjeta);

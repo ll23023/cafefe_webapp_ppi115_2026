@@ -71,7 +71,11 @@ button {
 
 .login-form custom-text {
     --custom-text-borde: var(--blanco-simple);
-    --custom-text-input-color: var(--barra);
+    --custom-text-fondo: rgb(0 0 0 / 35%);
+    --custom-text-input-color: var(--blanco-simple);
+    --custom-text-placeholder-color: var(--blanco-simple);
+    --custom-text-message-color: var(--blanco-simple);
+    --custom-text-error: var(--blanco-simple);
     --margen-defecto: 0;
 }
 
@@ -88,7 +92,7 @@ button {
 }
 
 .login-error {
-    color: var(--Growl-fallo1);
+    color: #ffffff;
 }
 
 .login-form h1 {
@@ -129,11 +133,42 @@ button {
     background: var(--barra);
 }
 
+.connection-banner {
+    margin: 0;
+    padding: .65rem max(var(--margen-defecto), 4vw);
+    color: var(--barra);
+    background: #fff0c2;
+    border-bottom: 1px solid #d6b66f;
+    font-weight: 600;
+}
+
+.connection-banner[hidden] {
+    display: none;
+}
+
 .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
     color: inherit;
     font-size: 1.3rem;
     font-weight: 800;
     text-decoration: none;
+}
+
+.brand img {
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.install-app {
+    flex: 0 0 auto;
+}
+
+.install-app[hidden] {
+    display: none;
 }
 
 .nav {
@@ -210,6 +245,14 @@ button {
 .menu-tools {
     margin-bottom: var(--margen-defecto);
     padding: 0 var(--relleno-defecto);
+}
+
+.menu-state {
+    margin: 0;
+    padding: var(--relleno-defecto);
+    color: var(--barra);
+    background: var(--primario-segundo-color);
+    border-radius: var(--radio-borde);
 }
 
 .cart-fab {
@@ -350,6 +393,16 @@ rejilla-tarjetas {
 
 .popup-footer {
     margin-top: var(--margen-defecto);
+}
+
+.payment-connection-status,
+.payment-block-message {
+    color: var(--barra);
+    font-weight: 600;
+}
+
+.payment-block-message:empty {
+    display: none;
 }
 
 @media (max-width: 700px) {

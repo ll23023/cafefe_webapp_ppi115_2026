@@ -22,5 +22,28 @@ import "./components/cambioPagina/cambioPaginaComportamiento.js";
 import "./components/router/routerComportamiento.js";
 import { iniciarAplicacion } from "./app.js";
 
-iniciarAplicacion();
+async function registrarServiceWorker() {
+    if (!('serviceWorker' in navigator)) return null;
+
+    const script = new URL('../../../sw.js', import.meta.url);
+    const scope = new URL('../../../', import.meta.url);
+    const registration = await navigator.serviceWorker.register(script, { scope: scope.pathname });
+    await navigator.serviceWorker.ready;
+
+    const recursos = performance.getEntriesByType('resource')
+        .map((entrada) => new URL(entrada.name, import.meta.url))
+        .filter((url) => url.origin === location.origin && url.pathname.startsWith(scope.pathname))
+        .map((url) => url.href);
+    (navigator.serviceWorker.controller || registration.active)
+        ?.postMessage({ type: 'PRECACHE_RESOURCES', urls: recursos });
+    return registration;
+}
+
+registrarServiceWorker().then(
+    iniciarAplicacion,
+    (error) => {
+        console.error('No se pudo registrar el Service Worker; la aplicación seguirá en línea:', error);
+        iniciarAplicacion();
+    }
+);
 

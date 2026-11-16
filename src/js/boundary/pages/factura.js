@@ -74,7 +74,7 @@ export function generarFacturaPdf(orden, pagos = {}, ventanaExistente = null) {
 </head>
 <body>
     <header>
-        <h1>cafefe</h1>
+        <h1>CAFEFE</h1>
         <p>Factura de consumo</p>
         <p>Gracias por tu compra</p>
     </header>
@@ -91,7 +91,7 @@ export function generarFacturaPdf(orden, pagos = {}, ventanaExistente = null) {
     <hr class="rule">
     <div class="total"><span>TOTAL</span><span>${dinero(total)}</span></div>
     ${metodos ? `<ul class="payments"><li><strong>Pagos</strong><strong></strong></li>${metodos}</ul>` : ''}
-    <footer><p>Conserva este comprobante.</p><p>cafefe</p></footer>
+    <footer><p>Conserva este comprobante.</p><p>CAFEFE</p></footer>
 </body>
 </html>`);
     ventana.addEventListener('load', () => ventana.print(), { once: true });

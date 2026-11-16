@@ -6,7 +6,7 @@
 
 class CustomTarjeta extends HTMLElement {
 
-    static observedAttributes = ['titulo', 'descripcion', 'precio', 'variante', 'disabled', 'uid', 'imagen'];
+    static observedAttributes = ['titulo', 'descripcion', 'precio', 'variante', 'disabled', 'uid'];
     static _template;
 
     _isRendered = false;
@@ -53,6 +53,7 @@ class CustomTarjeta extends HTMLElement {
                         bubbles: true,
                         composed: true,
                         detail: {
+                            uid: this.getAttribute('uid') ?? '',
                             titulo: this.getAttribute('titulo') ?? '',
                             precio: this.getAttribute('precio') ?? ''
                         }
@@ -81,14 +82,15 @@ class CustomTarjeta extends HTMLElement {
         this.#precio.textContent = this.getAttribute('precio') ?? '';
         this.#boton.disabled = this.hasAttribute('disabled');
 
-        const uid = this.getAttribute('uid') ?? this.getAttribute('id') ?? '';
-        const imagenPorDefecto = './assets/images/categorias/bebidas/americano.png';
+        const uid = this.getAttribute('uid') ?? '';
+        const imagenPorDefecto = './assets/images/categorias/test.png';
         this.#imagen.onerror = function() {
             this.onerror = null;
             this.src = imagenPorDefecto;
         };
-        this.#imagen.src = this.getAttribute('imagen') ||
-            (uid ? `./assets/images/productos/${encodeURIComponent(uid)}.png` : imagenPorDefecto);
+        this.#imagen.src = uid
+            ? `./assets/images/${encodeURIComponent(uid)}.png`
+            : imagenPorDefecto;
         this.#imagen.alt = this.getAttribute('titulo') ?? '';
     }
 }

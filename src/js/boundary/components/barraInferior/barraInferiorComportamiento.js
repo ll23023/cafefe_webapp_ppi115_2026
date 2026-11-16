@@ -6,7 +6,7 @@
 
 class CustomBarraInferior extends HTMLElement {
 
-    static observedAttributes = ['texto', 'texto-secundario', 'texto-primario'];
+    static observedAttributes = ['texto', 'texto-secundario', 'texto-primario', 'disabled-primario'];
     static _template;
 
     _isRendered = false;
@@ -95,6 +95,7 @@ class CustomBarraInferior extends HTMLElement {
         this.#primario.setAttribute('texto', this.getAttribute('texto-primario') ?? '');
         this.#secundario.toggleAttribute('hidden', !this.getAttribute('texto-secundario'));
         this.#primario.toggleAttribute('hidden', !this.getAttribute('texto-primario'));
+        this.#primario.disabled = this.hasAttribute('disabled-primario');
     }
 
     #emitirAccion(accion) {

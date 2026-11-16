@@ -10,10 +10,17 @@
 
 .carrusel-filtros__lista {
     display: flex;
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
     gap: var(--margen-defecto, 1rem);
     overflow: hidden;
     scroll-behavior: smooth;
+}
+
+.carrusel-filtros__lista--desbordado {
+    justify-content: flex-start;
 }
 
 .carrusel-filtros__boton {

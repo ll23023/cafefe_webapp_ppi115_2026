@@ -9,13 +9,7 @@
   "icons": [
     {
       "src": "./src/assets/images/cafefeLogo.png",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./src/assets/icons/CarritoCompra.png",
-      "sizes": "512x512",
+      "sizes": "778x990",
       "type": "image/png",
       "purpose": "any"
     }

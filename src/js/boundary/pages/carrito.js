@@ -1,4 +1,5 @@
 import { formatearTotal } from '../../store.js';
+import { mostrarNotificacion } from '../helpers/notificaciones.js';
 
 export function renderCarrito(store, navigate) {
     const view = document.createElement('section');
@@ -25,8 +26,19 @@ function confirmarOrden(view, store, navigate) {
     view.appendChild(popup);
     popup.show();
     popup.addEventListener('aceptar-popup', () => {
-        store.crearOrdenDesdeCarrito(store.estado.usuario);
+        let orden;
+        try {
+            orden = store.crearOrdenDesdeCarrito(store.estado.usuario);
+        } catch (error) {
+            mostrarNotificacion(`No se pudo guardar la orden: ${error.message}`, 'fracaso');
+            return;
+        }
         popup.remove();
+        if (orden?.estadoSincronizacion === 'pendiente') {
+            window.addEventListener('hashchange', function() {
+                mostrarNotificacion('La orden se guardó localmente y queda pendiente de sincronización.', 'exito');
+            }, { once: true });
+        }
         navigate('menu');
     });
     popup.addEventListener('cerrar-popup', () => { if (popup.isConnected) popup.remove(); });

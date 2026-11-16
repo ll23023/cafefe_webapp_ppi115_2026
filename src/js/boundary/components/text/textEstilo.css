@@ -44,7 +44,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0 16px;
-    background: var(--fondo-pagina-input, #FEFBF8);
+    background: var(--custom-text-fondo, var(--fondo-pagina-input, #FEFBF8));
     border: 2px solid var(--custom-text-borde);
     border-radius: var(--radio-borde, 14px);
     transition: box-shadow 0.15s ease, border-color 0.15s ease;
@@ -70,6 +70,11 @@
     cursor: not-allowed;
 }
 
+.custom-text__input::placeholder {
+    color: var(--custom-text-placeholder-color, currentColor);
+    opacity: 1;
+}
+
 ::slotted([slot="prefix"]),
 ::slotted([slot="suffix"]) {
     display: inline-flex;
@@ -82,7 +87,7 @@
 .custom-text__message {
     margin: 6px 0 0;
     font-size: 0.8125rem;
-    color: #6b5e57;
+    color: var(--custom-text-message-color, #6b5e57);
 }
 
 .custom-text--disabled .custom-text__field {
@@ -105,6 +110,6 @@
 }
 
 .custom-text--error .custom-text__message {
-    color: var(--custom-text-error);
+    color: var(--custom-text-error, #b42318);
     font-weight: 500;
 }

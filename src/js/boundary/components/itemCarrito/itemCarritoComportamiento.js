@@ -4,7 +4,7 @@
  * @author MikeLB
  */
 class ItemCarrito extends HTMLElement {
-    static observedAttributes = ['titulo', 'descripcion', 'precio', 'imagen', 'cantidad'];
+    static observedAttributes = ['titulo', 'descripcion', 'precio', 'imagen', 'uid', 'cantidad'];
     static _template;
     _renderPromise;
     #imagen;
@@ -47,7 +47,15 @@ class ItemCarrito extends HTMLElement {
             });
         }
         await this._renderPromise;
-        this.#imagen.src = this.getAttribute('imagen') || '';
+        const uid = this.getAttribute('uid') || this.getAttribute('id') || '';
+        const imagenPorDefecto = './assets/images/categorias/test.png';
+        this.#imagen.onerror = function() {
+            this.onerror = null;
+            this.src = imagenPorDefecto;
+        };
+        this.#imagen.src = uid
+            ? `./assets/images/${encodeURIComponent(uid)}.png`
+            : imagenPorDefecto;
         this.#imagen.alt = this.getAttribute('titulo') || '';
         this.#titulo.textContent = this.getAttribute('titulo') || '';
         this.#descripcion.textContent = this.getAttribute('descripcion') || '';

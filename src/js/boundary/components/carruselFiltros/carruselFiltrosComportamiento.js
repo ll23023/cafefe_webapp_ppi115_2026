@@ -12,8 +12,8 @@ class CarruselFiltros extends HTMLElement {
     _filtros;
     _anterior;
     _siguiente;
-    _lista;
     _actualizarOverflow;
+    _observadorTamano;
 
     constructor() {
         super();
@@ -42,6 +42,11 @@ class CarruselFiltros extends HTMLElement {
                 this._siguiente = this.shadowRoot.querySelector('.carrusel-filtros__boton--siguiente');
                 this._anterior.addEventListener('click', () => this._desplazar(-1));
                 this._siguiente.addEventListener('click', () => this._desplazar(1));
+                this._actualizarOverflow = () => this._actualizarBotones();
+                this._filtros.addEventListener('scroll', this._actualizarOverflow, { passive: true });
+                if (typeof ResizeObserver === 'function') {
+                    this._observadorTamano = new ResizeObserver(this._actualizarOverflow);
+                }
                 this._isRendered = true;
             });
         }
@@ -58,15 +63,20 @@ class CarruselFiltros extends HTMLElement {
             this.dispatchEvent(new CustomEvent('error-carrusel', { detail: error, bubbles: true, composed: true }));
         }
 
+        this._observadorTamano?.disconnect();
+        this._observadorTamano?.observe(this._filtros);
         this._filtros.replaceChildren();
         for (const filtro of Array.isArray(filtros) ? filtros : []) {
             const elemento = document.createElement('filtro-circular');
-            const id = typeof filtro === 'object' ? filtro.filtroId ?? filtro.id ?? '' : filtro;
+            const id = typeof filtro === 'object'
+                ? filtro.uid ?? filtro.idTipoProducto ?? filtro.filtroId ?? filtro.id ?? ''
+                : filtro;
             if (id) {
                 elemento.setAttribute('filtroId', id);
                 elemento.setAttribute('nombre', typeof filtro === 'object' ? filtro.nombre ?? String(id) : String(id));
             }
             this._filtros.appendChild(elemento);
+            this._observadorTamano?.observe(elemento);
         }
     }
 
@@ -79,6 +89,7 @@ class CarruselFiltros extends HTMLElement {
     _actualizarBotones() {
         if (!this._isRendered) return;
         const hayOverflow = this._filtros.scrollWidth > this._filtros.clientWidth;
+        this._filtros.classList.toggle('carrusel-filtros__lista--desbordado', hayOverflow);
         this._anterior.disabled = !hayOverflow || this._filtros.scrollLeft <= 0;
         this._siguiente.disabled = !hayOverflow ||
             this._filtros.scrollLeft + this._filtros.clientWidth >= this._filtros.scrollWidth - 1;
@@ -89,7 +100,13 @@ class CarruselFiltros extends HTMLElement {
     }
 
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {
-        if (valorAnterior !== valorNuevo && this.isConnected) this._renderElement();
+        if (valorAnterior !== valorNuevo && this.isConnected) {
+            this._renderElement().catch((error) => console.error(error));
+        }
+    }
+
+    disconnectedCallback() {
+        this._observadorTamano?.disconnect();
     }
 }
 

@@ -3,15 +3,6 @@ import { ProductoService } from './control/ProductoService.js';
 import { TipoProductoService } from './control/TipoProductoService.js';
 import { ProductoTipoProductoService } from './control/ProductoTipoProductoService.js';
 
-const productos = [
-    { id: 'americano', uid: 'americano', titulo: 'Americano', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Cafe filtrado y sedoso', precio: '$2.00', imagen: './assets/images/productos/americano.png' },
-    { id: 'capuchino', uid: 'capuchino', titulo: 'Capuchino', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Espuma de leche y cacao', precio: '$3.50', imagen: './assets/images/productos/capuchino.png' },
-    { id: 'latte', uid: 'latte', titulo: 'Latte vainilla', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Espresso, leche y vainilla', precio: '$4.25', imagen: './assets/images/productos/latte.png' },
-    { id: 'te', uid: 'te', titulo: 'Te chai', categoria: 'Te', categoriaUid: 'te', descripcion: 'Especias, te negro y leche', precio: '$3.00', imagen: './assets/images/productos/te.png' },
-    { id: 'croissant', uid: 'croissant', titulo: 'Croissant', categoria: 'Pan', categoriaUid: 'pan', descripcion: 'Horneado con mantequilla', precio: '$2.75', imagen: './assets/images/productos/croissant.png' },
-    { id: 'brownie', uid: 'brownie', titulo: 'Brownie', categoria: 'Dulce', categoriaUid: 'dulce', descripcion: 'Chocolate intenso y nueces', precio: '$3.25', imagen: './assets/images/productos/brownie.png' }
-];
-
 const ordenes = [
     { id: '8687-gs65j-56lf-d8hd', cliente: 'Esteban Quito', estado: 'pendiente', total: '$25.00', items: [{ titulo: 'Capuchino', cantidad: 2, precio: '$7.00' }, { titulo: 'Croissant', cantidad: 2, precio: '$5.50' }] },
     { id: '4hu34-34hi-34hu34-67sdf', cliente: 'Ana Morales', estado: 'listo', total: '$30.00', items: [{ titulo: 'Latte vainilla', cantidad: 2, precio: '$8.50' }, { titulo: 'Brownie', cantidad: 2, precio: '$6.50' }] },
@@ -20,26 +11,51 @@ const ordenes = [
 
 const sesionInicial = Session.leer();
 const ORDENES_CLAVE = 'cafefe-orders';
+const COLA_OFFLINE_CLAVE = 'offline_orders_queue';
 const leerOrdenes = () => {
     try { return JSON.parse(localStorage.getItem(ORDENES_CLAVE) || 'null'); }
     catch { return null; }
 };
+let errorColaOffline = null;
+const leerColaOffline = () => {
+    try {
+        const valor = JSON.parse(localStorage.getItem(COLA_OFFLINE_CLAVE) || '[]');
+        if (!Array.isArray(valor) || valor.some((entrada) =>
+            !entrada || typeof entrada.idTemporal !== 'string' || !entrada.orden ||
+            typeof entrada.orden.id !== 'string' || !Array.isArray(entrada.orden.items)
+        )) {
+            throw new TypeError('La cola offline no tiene un formato válido.');
+        }
+        return valor;
+    } catch (error) {
+        errorColaOffline = error;
+        console.error('No se pudo leer la cola de órdenes offline:', error);
+        return [];
+    }
+};
+const colaOffline = leerColaOffline();
 const ordenesGuardadas = leerOrdenes();
+const ordenesBase = ordenesGuardadas ?? (sesionInicial?.ordenes?.length
+    ? sesionInicial.ordenes
+    : ordenes.map((orden) => ({ ...orden, items: orden.items.map((item) => ({ ...item })) })));
+const ordenesConColaOffline = [...ordenesBase];
+colaOffline.forEach((entrada) => {
+    if (entrada?.orden && !ordenesConColaOffline.some((orden) => orden.id === entrada.orden.id)) {
+        ordenesConColaOffline.push(entrada.orden);
+    }
+});
 const estado = {
     sesion: sesionInicial,
     usuario: sesionInicial?.nombre ?? '',
     carrito: sesionInicial?.carrito ?? [],
-    ordenes: ordenesGuardadas ?? (sesionInicial?.ordenes?.length ? sesionInicial.ordenes : ordenes.map((orden) => ({ ...orden, items: orden.items.map((item) => ({ ...item })) })))
+    ordenes: ordenesConColaOffline
 };
 const listeners = new Set();
 const catalogo = {
-    productos: [...productos],
-    categorias: [
-        { id: 'cafe', nombre: 'Cafe' },
-        { id: 'te', nombre: 'Te' },
-        { id: 'pan', nombre: 'Pan' },
-        { id: 'dulce', nombre: 'Dulce' }
-    ]
+    productos: [],
+    categorias: [],
+    estadoProductos: 'cargando',
+    estadoCategorias: 'cargando'
 };
 const emitir = () => {
     localStorage.setItem(ORDENES_CLAVE, JSON.stringify(estado.ordenes));
@@ -47,13 +63,34 @@ const emitir = () => {
     listeners.forEach((listener) => listener(estado));
 };
 
+const idDe = (valor, ...claves) => {
+    if (typeof valor === 'string') return valor;
+    if (!valor || typeof valor !== 'object') return null;
+    return claves.map((clave) => valor[clave]).find(Boolean) ?? null;
+};
+
 export const store = {
     get productos() { return catalogo.productos; },
     get categorias() { return catalogo.categorias; },
+    get estadoCatalogo() {
+        return {
+            productos: catalogo.estadoProductos,
+            categorias: catalogo.estadoCategorias
+        };
+    },
     ordenes,
     get estado() { return estado; },
     get ordenesActuales() {
         return estado.ordenes;
+    },
+    get ordenesOfflinePendientes() {
+        return colaOffline;
+    },
+    get errorColaOffline() {
+        return errorColaOffline;
+    },
+    esOrdenOfflinePendiente(id) {
+        return colaOffline.some((entrada) => entrada.idTemporal === id);
     },
     get ordenesPendientesDespacho() { return this.ordenesActuales.filter((orden) => orden.estado === 'pendiente'); },
     get ordenesPendientesPago() { return this.ordenesActuales.filter((orden) => orden.estado === 'listo' && orden.estadoPago !== 'pagado'); },
@@ -63,36 +100,78 @@ export const store = {
     },
     suscribir(listener) { listeners.add(listener); return () => listeners.delete(listener); },
     async cargarCatalogo() {
-        try {
-            const [respuestaProductos, respuestaTipos, respuestaRelaciones] = await Promise.all([
-                new ProductoService().findRange(0, 50),
-                new TipoProductoService().findRange(0, 50),
-                new ProductoTipoProductoService().findRange(0, 50)
-            ]);
-            const tipos = new Map(respuestaTipos.registros.map((tipo) => [
-                tipo.uid ?? tipo.idTipoProducto ?? tipo.id,
-                { id: tipo.uid ?? tipo.idTipoProducto ?? tipo.id, nombre: tipo.nombre }
-            ]));
-            const categoriaPorProducto = new Map(respuestaRelaciones.registros.map((relacion) => [
-                relacion.idProducto?.uid ?? relacion.idProducto?.idProducto ?? relacion.idProducto?.id ?? relacion.idProducto,
-                relacion.idTipoProducto?.uid ?? relacion.idTipoProducto?.idTipoProducto ?? relacion.idTipoProducto?.id ?? relacion.idTipoProducto
-            ]));
-            const apiProductos = respuestaProductos.registros.filter((producto) => producto.activo !== false).map((producto) => ({
-                id: producto.uid ?? producto.idProducto ?? producto.id,
-                uid: producto.uid ?? producto.idProducto ?? producto.id,
-                titulo: producto.nombre,
-                categoriaUid: categoriaPorProducto.get(producto.uid ?? producto.idProducto ?? producto.id) ?? null,
-                categoria: tipos.get(categoriaPorProducto.get(producto.uid ?? producto.idProducto ?? producto.id))?.nombre || 'Sin categoria',
-                descripcion: producto.comentarios || 'Producto de Cafefe',
-                precio: `$${Number(producto.precioSugerido ?? 0).toFixed(2)}`,
-                imagen: `./assets/images/productos/${encodeURIComponent(producto.uid ?? producto.idProducto ?? producto.id)}.png`
-            }));
-            if (apiProductos.length) catalogo.productos = apiProductos;
-            const apiCategorias = [...tipos.values()].filter((tipo) => tipo.id && tipo.nombre);
-            if (apiCategorias.length) catalogo.categorias = apiCategorias;
-        } catch (error) {
-            console.warn('Se conserva el catalogo temporal:', error.message);
+        catalogo.productos = [];
+        catalogo.categorias = [];
+        catalogo.estadoProductos = 'cargando';
+        catalogo.estadoCategorias = 'cargando';
+
+        const [productosResultado, categoriasResultado, relacionesResultado] = await Promise.allSettled([
+            new ProductoService().findRange(0, 50),
+            new TipoProductoService().findAll(),
+            new ProductoTipoProductoService().findRange(0, 50)
+        ]);
+
+        const tipos = categoriasResultado.status === 'fulfilled'
+            ? categoriasResultado.value.registros
+            : [];
+        const tiposPorId = new Map(tipos.map((tipo) => [
+            tipo.idTipoProducto,
+            tipo
+        ]));
+
+        if (categoriasResultado.status === 'fulfilled') {
+            catalogo.categorias = tipos
+                .filter((tipo) => tipo.activo !== false)
+                .map((tipo) => ({
+                    id: tipo.idTipoProducto,
+                    uid: tipo.idTipoProducto,
+                    nombre: tipo.nombre
+                }));
+            catalogo.estadoCategorias = catalogo.categorias.length ? 'listo' : 'vacio';
+        } else {
+            catalogo.estadoCategorias = 'error';
+            console.error('No se pudieron obtener las categorías:', categoriasResultado.reason);
         }
+
+        const relaciones = relacionesResultado.status === 'fulfilled'
+            ? relacionesResultado.value.registros
+            : [];
+        if (relacionesResultado.status === 'rejected') {
+            console.error('No se pudieron obtener las categorías asociadas a los productos:', relacionesResultado.reason);
+        }
+
+        const categoriaPorProducto = new Map(relaciones.map((relacion) => {
+            const productoId = idDe(relacion.idProducto, 'uid', 'idProducto', 'id');
+            const tipoId = idDe(relacion.idTipoProducto, 'uid', 'idTipoProducto', 'id');
+            return [productoId, {
+                id: tipoId,
+                nombre: tiposPorId.get(tipoId)?.nombre ?? relacion.idTipoProducto?.nombre ?? ''
+            }];
+        }).filter(([productoId]) => productoId));
+
+        if (productosResultado.status === 'fulfilled') {
+            catalogo.productos = productosResultado.value.registros
+                .filter((producto) => producto.activo !== false)
+                .map((producto) => {
+                    const uid = producto.idProducto;
+                    const categoria = categoriaPorProducto.get(uid);
+                    const nombreCategoria = categoria?.nombre ?? producto.tipoProducto?.nombre ?? '';
+                    return {
+                        id: uid,
+                        uid,
+                        titulo: producto.nombre,
+                        categoriaUid: categoria?.id ?? null,
+                        categoria: nombreCategoria || 'Sin categoría',
+                        descripcion: producto.comentarios || 'Producto de Cafefe',
+                        precio: `$${Number(producto.precioSugerido ?? 0).toFixed(2)}`
+                    };
+                });
+            catalogo.estadoProductos = catalogo.productos.length ? 'listo' : 'vacio';
+        } else {
+            catalogo.estadoProductos = 'error';
+            console.error('No se pudieron obtener los productos:', productosResultado.reason);
+        }
+
         return catalogo;
     },
     agregar(producto) {
@@ -116,6 +195,7 @@ export const store = {
     },
     crearOrdenDesdeCarrito(cliente) {
         if (!estado.carrito.length) return null;
+        const sinConexion = typeof navigator !== 'undefined' && !navigator.onLine;
         const orden = {
             id: crypto.randomUUID(),
             cliente,
@@ -124,6 +204,22 @@ export const store = {
             total: `$${formatearTotal(estado.carrito)}`,
             items: estado.carrito.map((item) => ({ ...item }))
         };
+        if (sinConexion) {
+            if (errorColaOffline) {
+                throw new Error('No se pudo recuperar la cola de órdenes offline; no se guardó esta orden.');
+            }
+            orden.estadoSincronizacion = 'pendiente';
+            const entrada = {
+                idTemporal: orden.id,
+                estado: 'pendiente',
+                creadaEn: new Date().toISOString(),
+                orden
+            };
+            const colaActualizada = [...colaOffline, entrada];
+            localStorage.setItem(COLA_OFFLINE_CLAVE, JSON.stringify(colaActualizada));
+            colaOffline.push(entrada);
+            errorColaOffline = null;
+        }
         estado.ordenes.push(orden);
         estado.carrito = [];
         emitir();
@@ -131,11 +227,13 @@ export const store = {
     },
     marcarOrdenPagada(id) {
         const orden = estado.ordenes.find((registro) => registro.id === id) || ordenes.find((registro) => registro.id === id);
+        if (this.esOrdenOfflinePendiente(id) || orden?.estadoSincronizacion === 'pendiente') return false;
         if (orden) {
             orden.estadoPago = 'pagado';
             orden.bloqueada = true;
         }
         emitir();
+        return Boolean(orden);
     },
     cerrarSesion() { Session.limpiar(); estado.sesion = null; estado.usuario = ''; estado.carrito = []; emitir(); }
 };

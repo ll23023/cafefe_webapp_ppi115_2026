@@ -30,7 +30,7 @@ export function iniciarAplicacion() {
         else if (ruta === 'ordenes') contenido = renderOrdenes(store);
         else if (ruta === 'pagos') contenido = renderPagos(store);
         else contenido = renderMenu(store, navegar);
-        app.appendChild(layout('', ruta, store.estado.sesion, salir));
+        app.appendChild(layout('', ruta, store.estado.sesion, salir, store));
         app.querySelector('.page').replaceChildren(contenido);
     };
     const navegar = (ruta) => { window.location.hash = `#/${ruta}`; };
@@ -49,6 +49,8 @@ export function iniciarAplicacion() {
     };
     const salir = () => { store.cerrarSesion(); window.location.hash = '#/login'; };
     window.addEventListener('hashchange', render);
+    window.addEventListener('online', render);
+    window.addEventListener('offline', render);
     store.suscribir(render);
     app.innerHTML = '<p class="app-loading">Cargando Cafefe...</p>';
     store.cargarCatalogo().finally(render);

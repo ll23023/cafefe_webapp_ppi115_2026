@@ -1,3 +1,16 @@
+const normalizarNombre = (valor) => String(valor ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+function iconoPorNombre(nombre) {
+    const categoria = normalizarNombre(nombre);
+    if (/mercancia/.test(categoria)) return './assets/icons/49599639-59e0-4012-a9c9-db3898a20d57.png';
+    if (/panaderia|comida|perecedero/.test(categoria)) return './assets/icons/e8c424db-e79e-4f20-8807-4d3b26c594a0.png';
+    if (/postre|dulce/.test(categoria)) return './assets/icons/5e90e6c3-e061-4a83-9e50-038261a63536.png';
+    return './assets/icons/db92d7fc-3cd0-40bb-9cba-c6c19b122ea5.png';
+}
+
 /**
  * Componente utilizado para crear un filtro circular.
  * 
@@ -86,12 +99,14 @@ class FiltroCircular extends HTMLElement {
 
         this._filtroId = this.getAttribute('filtroId') ?? '';
         const imagen = this.shadowRoot.querySelector('.filtroCircular__imagen');
-        const imagenPorDefecto = './assets/images/categorias/test.png';
+        const imagenPorDefecto = iconoPorNombre(this.getAttribute('nombre'));
         imagen.onerror = function() {
-            imagen.onerror = null;
-            imagen.src = imagenPorDefecto;
+            this.onerror = null;
+            this.src = imagenPorDefecto;
         };
-        imagen.src = this._filtroId ? `./assets/images/icons/${encodeURIComponent(this._filtroId)}.png` : '';
+        imagen.src = this._filtroId
+            ? `./assets/icons/${encodeURIComponent(this._filtroId)}.png`
+            : imagenPorDefecto;
         imagen.alt = this.getAttribute('nombre') || this._filtroId || 'Categoria';
     }
 
