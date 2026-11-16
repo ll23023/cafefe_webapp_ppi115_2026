@@ -22,7 +22,7 @@ class CustomBarraInferior extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomBarraInferior._template) {
-            CustomBarraInferior._template = fetch('/boundary/components/barraInferior/barraInferiorPlantilla.html')
+            CustomBarraInferior._template = fetch('/js/boundary/components/barraInferior/barraInferiorPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
@@ -44,6 +44,8 @@ class CustomBarraInferior extends HTMLElement {
                 this.#texto = this.shadowRoot.querySelector('.barra-inferior__texto');
                 this.#secundario = this.shadowRoot.querySelector('.barra-inferior__boton--secundario');
                 this.#primario = this.shadowRoot.querySelector('.barra-inferior__boton--primario');
+                this.#secundario.addEventListener('click', () => this.#emitirAccion('secundario'));
+                this.#primario.addEventListener('click', () => this.#emitirAccion('primario'));
                 this._isRendered = true;
             });
         }
@@ -91,6 +93,16 @@ class CustomBarraInferior extends HTMLElement {
         this.#texto.hidden = !texto;
         this.#secundario.setAttribute('texto', this.getAttribute('texto-secundario') ?? '');
         this.#primario.setAttribute('texto', this.getAttribute('texto-primario') ?? '');
+        this.#secundario.toggleAttribute('hidden', !this.getAttribute('texto-secundario'));
+        this.#primario.toggleAttribute('hidden', !this.getAttribute('texto-primario'));
+    }
+
+    #emitirAccion(accion) {
+        this.dispatchEvent(new CustomEvent('barra-accion', {
+            detail: { accion },
+            bubbles: true,
+            composed: true
+        }));
     }
 }
 

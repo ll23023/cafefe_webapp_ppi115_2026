@@ -16,7 +16,7 @@ class ContenidoDinamico extends HTMLElement {
 
     async _getTemplate() {
         if (!ContenidoDinamico._template) {
-            ContenidoDinamico._template = fetch('/boundary/components/contenidoDinamico/contenidoDinamicoPlantilla.html')
+            ContenidoDinamico._template = fetch('/js/boundary/components/contenidoDinamico/contenidoDinamicoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

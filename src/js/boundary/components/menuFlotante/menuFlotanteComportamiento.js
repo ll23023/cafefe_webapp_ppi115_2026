@@ -22,7 +22,7 @@ class CustomMenuFlotante extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomMenuFlotante._template) {
-            CustomMenuFlotante._template = fetch('/boundary/components/menuFlotante/menuFlotantePlantilla.html')
+            CustomMenuFlotante._template = fetch('/js/boundary/components/menuFlotante/menuFlotantePlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

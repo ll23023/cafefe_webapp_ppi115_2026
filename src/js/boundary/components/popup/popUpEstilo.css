@@ -11,3 +11,4 @@
 .popup__acciones[data-alineacion="izquierda"] { justify-content: flex-start; }
 .popup__acciones[data-alineacion="centrada"] { justify-content: center; }
 .popup__acciones[data-alineacion="derecha"] { justify-content: flex-end; }
+.popup__acciones[hidden] { display: none; }

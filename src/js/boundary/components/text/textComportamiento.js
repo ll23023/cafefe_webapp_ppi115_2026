@@ -38,7 +38,7 @@ class CustomText extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomText._template) {
-            CustomText._template = fetch('/boundary/components/text/textPlantilla.html')
+            CustomText._template = fetch('/js/boundary/components/text/textPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

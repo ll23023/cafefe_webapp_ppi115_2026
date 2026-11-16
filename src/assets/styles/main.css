@@ -1,74 +1,65 @@
-@import url('../../boundary/components/filtroCircular/filtroCircularEstilo.css');
 @import url('variables.css');
 
 * {
     box-sizing: border-box;
 }
 
-.filtroCircular__contenido {
-    display: flex;
-    flex-direction: column;
-
-    height: 100px;
-    width: 100px;
-
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-
-    border: 1px solid #000;
-    border-radius: 100%;
-
-    overflow: hidden;
+body {
+    margin: 0;
+    color: var(--barra);
+    font-family: system-ui, sans-serif;
+    background: var(--fondo-pagina-input);
 }
 
-.filtroCircular__contenido__imagen {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+button,
+input {
+    font: inherit;
 }
 
-/*VISTA LOGIN*/
+button {
+    cursor: pointer;
+}
+
+#app {
+    min-height: 100vh;
+}
 
 .login-fondo {
     display: grid;
     place-items: center;
     min-height: 100vh;
-    margin: 0;
     padding: var(--margen-defecto);
-    font-family: system-ui, -apple-system, sans-serif;
-    background-color: var(--barra);
-    background-image: url("../images/fondoLogin.jpeg");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: var(--barra) url('../images/fondoLogin.jpeg') center / cover no-repeat;
 }
 
 .login-panel {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1.15fr 1fr;
     align-items: center;
-    width: 74%;
-    max-width: 1100px;
-    min-height: 480px;
+    width: min(100%, 60rem);
+    min-height: 30rem;
     padding: calc(var(--relleno-defecto) * 2);
-    background-color: var(--fondo-oscuro);
+    color: var(--blanco-simple);
+    background: var(--fondo-oscuro);
+    border-radius: var(--radio-borde);
 }
 
 .login-logo {
-    width: 240px;
-    max-width: 80%;
+    width: min(12rem, 80%);
     justify-self: center;
     object-fit: contain;
 }
 
-.login-form {
+.login-form,
+.stack {
     display: flex;
     flex-direction: column;
     gap: var(--margen-defecto);
-    width: 100%;
-    max-width: 290px;
-    justify-self: center;
+}
+
+.login-form {
+    max-width: 24rem;
+    margin: 0 auto;
 }
 
 .login-acciones {
@@ -85,15 +76,305 @@
 }
 
 .login-form custom-checkbox {
-    --custom-checkbox-color: var(--blanco-simple);    
-    --custom-checkbox-fondo: transparent;              
-    --custom-checkbox-fondo-checked: transparent;     
-    --custom-checkbox-palomita: var(--blanco-simple);  
+    --custom-checkbox-color: var(--blanco-simple);
+    --custom-checkbox-fondo: transparent;
+    --custom-checkbox-fondo-checked: transparent;
+    --custom-checkbox-palomita: var(--blanco-simple);
 }
 
 .login-form custom-boton-redondeado {
     --barra: var(--blanco-simple);
-    --primario-primer-color: transparent;         
+    --primario-primer-color: transparent;
 }
 
-/*para otras vistas poner aqui abajo*/
+.login-error {
+    color: var(--Growl-fallo1);
+}
+
+.login-form h1 {
+    margin: 0;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--margen-defecto) / 2);
+}
+
+.field input,
+.payment-input {
+    width: 100%;
+    padding: var(--relleno-defecto);
+    color: var(--barra);
+    background: var(--fondo-pagina-input);
+    border: 1px solid var(--primario-primer-color);
+    border-radius: var(--radio-borde);
+}
+
+.app-shell {
+    min-height: 100vh;
+    background: var(--fondo-pagina-input);
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--margen-defecto);
+    padding: var(--relleno-defecto) max(var(--margen-defecto), 4vw);
+    color: var(--blanco-simple);
+    background: var(--barra);
+}
+
+.brand {
+    color: inherit;
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--margen-defecto) / 2);
+}
+
+.nav a,
+.avatar {
+    padding: .5rem .75rem;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radio-borde);
+    text-decoration: none;
+}
+
+.nav a[aria-current="page"],
+.nav a:hover,
+.avatar:hover {
+    background: var(--primario-primer-color);
+}
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    color: var(--barra);
+    background: var(--deshacer-volver);
+    border-radius: 50%;
+}
+
+.page {
+    width: min(100% - 2 * var(--margen-defecto), 76rem);
+    margin: 0 auto;
+    padding: calc(var(--margen-defecto) * 2) 0 7rem;
+}
+
+.page-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--margen-defecto);
+    margin-bottom: calc(var(--margen-defecto) * 1.5);
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: clamp(1.7rem, 3vw, 2.6rem);
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--margen-defecto) / 2);
+    margin-bottom: calc(var(--margen-defecto) * 1.5);
+}
+
+.filter-row button,
+.status-filter {
+    padding: .6rem 1rem;
+    color: var(--barra);
+    background: var(--primario-segundo-color);
+    border: 1px solid var(--primario-primer-color);
+    border-radius: 999px;
+}
+
+.filter-row button.active {
+    color: var(--blanco-simple);
+    background: var(--barra);
+}
+
+.menu-tools {
+    margin-bottom: var(--margen-defecto);
+    padding: 0 var(--relleno-defecto);
+}
+
+.cart-fab {
+    position: fixed;
+    right: var(--margen-defecto);
+    bottom: var(--margen-defecto);
+    z-index: 10;
+}
+
+.toast {
+    position: fixed;
+    right: var(--margen-defecto);
+    bottom: calc(var(--margen-defecto) * 5);
+    z-index: 30;
+}
+
+.order-list {
+    display: grid;
+    gap: var(--margen-defecto);
+}
+
+.order-row,
+.payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--margen-defecto);
+    padding: var(--relleno-defecto);
+    background: var(--primario-segundo-color);
+    border-radius: var(--radio-borde);
+}
+
+.order-row {
+    width: 100%;
+    border: 0;
+    text-align: left;
+}
+
+.order-row:hover {
+    background: var(--primario-primer-color);
+}
+
+.order-row strong,
+.order-row span,
+.payment-row strong,
+.payment-row span {
+    display: block;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--margen-defecto);
+}
+
+.payment-row {
+    background: var(--encabezado-orden);
+}
+
+.payment-row button {
+    padding: .6rem;
+    color: var(--barra);
+    background: transparent;
+    border: 0;
+    text-align: left;
+}
+
+.modal-items {
+    display: grid;
+    gap: calc(var(--margen-defecto) / 2);
+    margin: var(--margen-defecto) 0;
+}
+
+.modal-item {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--margen-defecto);
+    padding: .6rem;
+    background: var(--primario-segundo-color);
+    border-radius: var(--radio-borde);
+}
+
+.modal-form {
+    display: grid;
+    gap: var(--margen-defecto);
+    margin: var(--margen-defecto) 0;
+}
+
+.modal-form label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: calc(var(--margen-defecto) / 2);
+}
+
+.modal-form label span {
+    font-weight: 700;
+}
+
+.modal-form .payment-input {
+    grid-column: 1 / -1;
+}
+
+rejilla-tarjetas {
+    display: block;
+    width: 100%;
+}
+
+.cart-list {
+    display: grid;
+    gap: calc(var(--margen-defecto) / 2);
+}
+
+.cart-actions,
+.popup-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(var(--margen-defecto) / 2);
+    padding: var(--relleno-defecto);
+    background: var(--barra);
+    border-radius: var(--radio-borde);
+}
+
+.cart-actions {
+    position: sticky;
+    bottom: var(--margen-defecto);
+    z-index: 5;
+    margin-top: var(--margen-defecto);
+}
+
+.cart-actions>span,
+.popup-footer>strong {
+    margin-right: auto;
+    color: var(--blanco-simple);
+    font-weight: 700;
+}
+
+.popup-footer {
+    margin-top: var(--margen-defecto);
+}
+
+@media (max-width: 700px) {
+    .login-panel {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        gap: calc(var(--margen-defecto) * 2);
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .nav {
+        order: 3;
+        width: 100%;
+    }
+
+    .orders-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

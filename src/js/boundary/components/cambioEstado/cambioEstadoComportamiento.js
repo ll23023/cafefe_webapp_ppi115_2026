@@ -10,6 +10,7 @@ class CambioEstado extends HTMLElement {
     _isRendered = false;
     _renderPromise;
     _checkbox;
+    _texto;
 
     constructor() {
         super();
@@ -18,7 +19,7 @@ class CambioEstado extends HTMLElement {
 
     async _getTemplate() {
         if (!CambioEstado._template) {
-            CambioEstado._template = fetch('/boundary/components/cambioEstado/cambioEstadoPlantilla.html')
+            CambioEstado._template = fetch('/js/boundary/components/cambioEstado/cambioEstadoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
@@ -34,6 +35,7 @@ class CambioEstado extends HTMLElement {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
                 this._checkbox = this.shadowRoot.querySelector('.cambio-estado__checkbox');
+                this._texto = this.shadowRoot.querySelector('.cambio-estado__texto');
                 this._checkbox.addEventListener('change', (evento) => this._cambiarEstado(evento));
                 this._isRendered = true;
             });
@@ -41,6 +43,8 @@ class CambioEstado extends HTMLElement {
         await this._renderPromise;
         const estado = this.getAttribute('estado') || 'pendiente';
         this._checkbox.checked = ['listo', 'activo'].includes(estado);
+        this._texto.textContent = this._checkbox.checked ? 'Listo' : 'Pendiente';
+        this._texto.dataset.estado = this._checkbox.checked ? 'listo' : 'pendiente';
         this._checkbox.disabled = this.hasAttribute('disabled') ||
             (this.getAttribute('modo') || 'toggle') === 'oneChange' && this._checkbox.checked;
     }
@@ -49,6 +53,8 @@ class CambioEstado extends HTMLElement {
         const modo = this.getAttribute('modo') || 'toggle';
         const nuevoEstado = evento.target.checked ? 'listo' : 'pendiente';
         this.setAttribute('estado', nuevoEstado);
+        this._texto.textContent = nuevoEstado === 'listo' ? 'Listo' : 'Pendiente';
+        this._texto.dataset.estado = nuevoEstado;
         if (modo === 'oneChange') this._checkbox.disabled = true;
         this.dispatchEvent(new CustomEvent('cambio-estado', {
             detail: { estado: nuevoEstado, modo },

@@ -29,7 +29,7 @@ class FiltroCircular extends HTMLElement {
 
         // Verifica si la plantilla ya ha sido cargada, si no, la carga desde el archivo HTML.
         if (!FiltroCircular._template) {
-            FiltroCircular._template = fetch('/boundary/components/filtroCircular/filtroCircularPlantilla.html')
+            FiltroCircular._template = fetch('/js/boundary/components/filtroCircular/filtroCircularPlantilla.html')
 
                 // Comprobamos si la respuesta de la solicitud es correcta, si no, lanzamos un error.
                 .then((response) => {
@@ -65,12 +65,19 @@ class FiltroCircular extends HTMLElement {
             this._filtroId = this.hasAttribute('filtroId') ? this.getAttribute('filtroId') : '';
 
             // Si el atributo 'filtroId' existe, actualizamos la imagen del filtro circular con la ruta correspondiente.
-            this.shadowRoot.querySelector('.filtroCircular__imagen').src = this._filtroId ? `/assets/images/categorias/${this._filtroId}.png` : '';
+            const imagen = this.shadowRoot.querySelector('.filtroCircular__imagen');
+            imagen.src = this._filtroId ? '/assets/images/categorias/test.png' : '';
+            imagen.alt = this._filtroId || 'Categoria';
 
             this.shadowRoot.querySelector('.filtroCircular__checkbox').addEventListener('change', (event) => {
                 // TODO: Agregar la lógica para obtener una lista de entidades filtradas según el filtro seleccionado.
                 this._estaActivo = event.target.checked;
                 this.shadowRoot.querySelector('.filtroCircular__contenido').classList.toggle('seleccionado');
+                this.dispatchEvent(new CustomEvent('filtro-seleccionado', {
+                    detail: { categoria: this._filtroId, activo: this._estaActivo },
+                    bubbles: true,
+                    composed: true
+                }));
             });
 
             // Cambiamos el estado de la propiedad '_isCloned' a true para indicar que la plantilla ha sido clonada y agregada al shadow DOM.

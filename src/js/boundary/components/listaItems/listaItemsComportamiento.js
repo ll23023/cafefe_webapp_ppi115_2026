@@ -4,7 +4,7 @@
  * @author MikeLB
  */
 class ListaItems extends HTMLElement {
-    static observedAttributes = ['items'];
+    static observedAttributes = ['items', 'tipo'];
     static _template;
 
     _isRendered = false;
@@ -18,7 +18,7 @@ class ListaItems extends HTMLElement {
 
     async _getTemplate() {
         if (!ListaItems._template) {
-            ListaItems._template = fetch('/boundary/components/listaItems/listaItemsPlantilla.html')
+            ListaItems._template = fetch('/js/boundary/components/listaItems/listaItemsPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
@@ -47,8 +47,10 @@ class ListaItems extends HTMLElement {
         }
         this._lista.replaceChildren();
         for (const item of Array.isArray(items) ? items : []) {
-            const elemento = document.createElement('lista-item');
-            for (const atributo of ['titulo', 'descripcion', 'precio', 'imagen']) {
+            const elemento = document.createElement(this.getAttribute('tipo') === 'carrito' ? 'item-carrito' : 'lista-item');
+            for (const atributo of this.getAttribute('tipo') === 'carrito'
+                ? ['id', 'titulo', 'descripcion', 'precio', 'imagen', 'cantidad']
+                : ['titulo', 'descripcion', 'precio', 'imagen']) {
                 if (item?.[atributo] != null) elemento.setAttribute(atributo, item[atributo]);
             }
             this._lista.appendChild(elemento);

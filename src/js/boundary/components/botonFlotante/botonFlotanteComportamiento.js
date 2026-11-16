@@ -20,7 +20,7 @@ class CustomBotonFlotante extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomBotonFlotante._template) {
-            CustomBotonFlotante._template = fetch('/boundary/components/botonFlotante/botonFlotantePlantilla.html')
+            CustomBotonFlotante._template = fetch('/js/boundary/components/botonFlotante/botonFlotantePlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

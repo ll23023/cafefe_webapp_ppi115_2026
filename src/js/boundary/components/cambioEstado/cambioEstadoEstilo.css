@@ -5,6 +5,11 @@
 .cambio-estado {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    color: var(--barra, #3F1D0E);
+    background: var(--estado-pendiente, #C9C2B6);
+    border-radius: var(--radio-borde, 10px);
     cursor: pointer;
 }
 
@@ -17,4 +22,18 @@
 .cambio-estado__checkbox:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.cambio-estado__texto {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.cambio-estado__texto[data-estado="listo"] {
+    color: var(--blanco-simple, #FFF);
+}
+
+:host([estado="listo"]) .cambio-estado,
+:host([estado="activo"]) .cambio-estado {
+    background: var(--estado-completo, #A8B89F);
 }

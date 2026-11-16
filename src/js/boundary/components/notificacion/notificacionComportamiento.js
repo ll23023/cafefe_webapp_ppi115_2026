@@ -25,7 +25,7 @@ class CustomNotificacion extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomNotificacion._template) {
-            CustomNotificacion._template = fetch('/boundary/components/notificacion/notificacionPlantilla.html')
+            CustomNotificacion._template = fetch('/js/boundary/components/notificacion/notificacionPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

@@ -10,7 +10,7 @@ class RejillaTarjetas extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/boundary/components/rejillaTarjetas/rejillaTarjetasEstilo.css"><section class="rejilla-tarjetas" aria-label="Productos"></section>';
+        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/js/boundary/components/rejillaTarjetas/rejillaTarjetasEstilo.css"><section class="rejilla-tarjetas" aria-label="Productos"></section>';
         this.#rejilla = this.shadowRoot.querySelector('.rejilla-tarjetas');
     }
 

@@ -22,7 +22,7 @@ class CustomBotonCircular extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomBotonCircular._template) {
-            CustomBotonCircular._template = fetch('/boundary/components/botonCircular/botonCircularPlantilla.html')
+            CustomBotonCircular._template = fetch('/js/boundary/components/botonCircular/botonCircularPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

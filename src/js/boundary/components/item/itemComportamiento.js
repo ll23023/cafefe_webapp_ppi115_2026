@@ -21,7 +21,7 @@ class Item extends HTMLElement {
 
     async _getTemplate() {
         if (!Item._template) {
-            Item._template = fetch('/boundary/components/item/itemPlantilla.html')
+            Item._template = fetch('/js/boundary/components/item/itemPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

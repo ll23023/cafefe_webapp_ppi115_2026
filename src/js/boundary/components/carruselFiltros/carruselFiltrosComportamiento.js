@@ -22,7 +22,7 @@ class CarruselFiltros extends HTMLElement {
 
     async _getTemplate() {
         if (!CarruselFiltros._template) {
-            CarruselFiltros._template = fetch('/boundary/components/carruselFiltros/carruselFiltrosPlantilla.html')
+            CarruselFiltros._template = fetch('/js/boundary/components/carruselFiltros/carruselFiltrosPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

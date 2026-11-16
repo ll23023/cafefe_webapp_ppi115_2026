@@ -21,7 +21,7 @@ class ItemCarrito extends HTMLElement {
 
     async _getTemplate() {
         if (!ItemCarrito._template) {
-            ItemCarrito._template = fetch('/boundary/components/itemCarrito/itemCarritoPlantilla.html')
+            ItemCarrito._template = fetch('/js/boundary/components/itemCarrito/itemCarritoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

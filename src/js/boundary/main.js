@@ -20,4 +20,7 @@ import "./components/popup/popUpComportamiento.js";
 import "./components/rejillaTarjetas/rejillaTarjetasComportamiento.js";
 import "./components/cambioPagina/cambioPaginaComportamiento.js";
 import "./components/router/routerComportamiento.js";
+import { iniciarAplicacion } from "./app.js";
+
+iniciarAplicacion();
 

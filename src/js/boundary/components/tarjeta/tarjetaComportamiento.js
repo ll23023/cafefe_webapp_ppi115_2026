@@ -23,7 +23,7 @@ class CustomTarjeta extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomTarjeta._template) {
-            CustomTarjeta._template = fetch('/boundary/components/tarjeta/tarjetaPlantilla.html')
+            CustomTarjeta._template = fetch('/js/boundary/components/tarjeta/tarjetaPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
