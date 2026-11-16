@@ -4,6 +4,8 @@
  * @author MikeLB
  */
 class FiltroCircular extends HTMLElement {
+    static observedAttributes = ['filtroId', 'nombre'];
+
     // Propiedad estática que contendrá la plantilla del componente.
     static _template;
 
@@ -29,7 +31,7 @@ class FiltroCircular extends HTMLElement {
 
         // Verifica si la plantilla ya ha sido cargada, si no, la carga desde el archivo HTML.
         if (!FiltroCircular._template) {
-            FiltroCircular._template = fetch('/js/boundary/components/filtroCircular/filtroCircularPlantilla.html')
+            FiltroCircular._template = fetch('./js/boundary/components/filtroCircular/filtroCircularPlantilla.html')
 
                 // Comprobamos si la respuesta de la solicitud es correcta, si no, lanzamos un error.
                 .then((response) => {
@@ -66,8 +68,6 @@ class FiltroCircular extends HTMLElement {
 
             // Si el atributo 'filtroId' existe, actualizamos la imagen del filtro circular con la ruta correspondiente.
             const imagen = this.shadowRoot.querySelector('.filtroCircular__imagen');
-            imagen.src = this._filtroId ? '/assets/images/categorias/test.png' : '';
-            imagen.alt = this._filtroId || 'Categoria';
 
             this.shadowRoot.querySelector('.filtroCircular__checkbox').addEventListener('change', (event) => {
                 // TODO: Agregar la lógica para obtener una lista de entidades filtradas según el filtro seleccionado.
@@ -83,6 +83,16 @@ class FiltroCircular extends HTMLElement {
             // Cambiamos el estado de la propiedad '_isCloned' a true para indicar que la plantilla ha sido clonada y agregada al shadow DOM.
             this._isCloned = true;
         }
+
+        this._filtroId = this.getAttribute('filtroId') ?? '';
+        const imagen = this.shadowRoot.querySelector('.filtroCircular__imagen');
+        const imagenPorDefecto = './assets/images/categorias/test.png';
+        imagen.onerror = function() {
+            imagen.onerror = null;
+            imagen.src = imagenPorDefecto;
+        };
+        imagen.src = this._filtroId ? `./assets/images/icons/${encodeURIComponent(this._filtroId)}.png` : '';
+        imagen.alt = this.getAttribute('nombre') || this._filtroId || 'Categoria';
     }
 
 
@@ -92,9 +102,9 @@ class FiltroCircular extends HTMLElement {
     }
 
     // Este método se utiliza para actualizar el estado del componente cuando se cambian sus atributos.
-    attributeChangedCallback() {
-        if (this.isConnected && this.getAttribute('imagen') !== null && this.getAttribute('filtro') !== null) {
-            this._renderElement();
+    attributeChangedCallback(nombre, valorAnterior, valorNuevo) {
+        if (valorAnterior !== valorNuevo && this.isConnected) {
+            this._renderElement().catch((error) => console.error(error));
         }
     }
 }

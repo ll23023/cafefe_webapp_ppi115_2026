@@ -2,11 +2,29 @@ import { generarFacturaPdf } from './factura.js';
 import { FacturaService } from '../../control/FacturaService.js';
 import { PagoService } from '../../control/PagoService.js';
 import { PagoDetalleService } from '../../control/PagoDetalleService.js';
+import { Session } from '../../control/Session.js';
 import { PAGOS_API_ACTIVA } from '../../config.js';
 
 export function renderPagos(store) {
     const view = document.createElement('section');
-    view.innerHTML = `<div class="page-header"><h1>Ordenes pendientes de pago</h1></div><div class="orders-grid"></div>`;
+    view.innerHTML = `<div class="page-header"><h1>Ordenes pendientes de pago</h1></div><p class="payment-caja" role="status"></p><div class="orders-grid"></div>`;
+    const cajaEstado = view.querySelector('.payment-caja');
+    const sesion = store.estado.sesion;
+    if (Session.esCajero(sesion)) {
+        cajaEstado.textContent = sesion.caja?.nombre
+            ? `Caja vinculada: ${sesion.caja.nombre}`
+            : 'Cargando caja...';
+        Session.asegurarCaja(sesion).then((sesionActualizada) => {
+            store.estado.sesion = sesionActualizada;
+            cajaEstado.textContent = `Caja vinculada: ${sesionActualizada.caja.nombre || sesionActualizada.idCaja}`;
+        }).catch((error) => {
+            cajaEstado.setAttribute('role', 'alert');
+            cajaEstado.textContent = error.message;
+        });
+    } else {
+        cajaEstado.remove();
+    }
+
     const grid = view.querySelector('.orders-grid');
     store.ordenesPendientesPago.forEach((orden) => { const row = document.createElement('div'); row.className = 'payment-row'; row.innerHTML = `<button type="button"><strong>Orden ${orden.id}</strong><span>${orden.cliente}</span></button><span class="status-filter">PENDIENTE</span>`; row.querySelector('button').addEventListener('click', () => detallePago(view, store, orden)); grid.appendChild(row); });
     return view;
@@ -44,7 +62,9 @@ function confirmarPago(view, anterior, store, orden) {
 async function registrarPagoApi(orden, pagos, store) {
     if (!PAGOS_API_ACTIVA) return { facturaId: `local-${orden.id}`, origen: 'local' };
     try {
-        const facturaId = await new FacturaService().create({ idCaja: store.estado.sesion?.idCaja, idEmpleadoRol: store.estado.sesion?.idEmpleadoRol, cliente: orden.cliente, estado: 'PAGADA', observaciones: `Orden ${orden.id}` });
+        const sesion = await Session.asegurarCaja(store.estado.sesion);
+        store.estado.sesion = sesion;
+        const facturaId = await new FacturaService().create({ idCaja: sesion.idCaja, idEmpleadoRol: sesion.idEmpleadoRol, cliente: orden.cliente, estado: 'PAGADA', observaciones: `Orden ${orden.id}` });
         const pagoId = await new PagoService().create({ idFactura: facturaId, estado: 'COMPLETADO', observaciones: `Orden ${orden.id}` });
         const detalles = Object.entries(pagos).filter(([, monto]) => Number(String(monto).replace('$', '')) > 0);
         await Promise.all(detalles.map(([tipoPago, monto]) => new PagoDetalleService().create({ idPago: pagoId, monto: Number(String(monto).replace('$', '')), tipoPago: tipoPago.toUpperCase() })));

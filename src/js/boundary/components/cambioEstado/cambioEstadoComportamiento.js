@@ -19,7 +19,7 @@ class CambioEstado extends HTMLElement {
 
     async _getTemplate() {
         if (!CambioEstado._template) {
-            CambioEstado._template = fetch('/js/boundary/components/cambioEstado/cambioEstadoPlantilla.html')
+            CambioEstado._template = fetch('./js/boundary/components/cambioEstado/cambioEstadoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

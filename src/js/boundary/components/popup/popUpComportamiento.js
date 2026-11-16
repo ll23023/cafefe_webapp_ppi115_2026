@@ -22,7 +22,7 @@ class PopUp extends HTMLElement {
 
     async _getTemplate() {
         if (!PopUp._template) {
-            PopUp._template = fetch('/js/boundary/components/popup/popUpPlantilla.html')
+            PopUp._template = fetch('./js/boundary/components/popup/popUpPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

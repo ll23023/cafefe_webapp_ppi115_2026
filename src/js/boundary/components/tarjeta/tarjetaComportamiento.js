@@ -6,7 +6,7 @@
 
 class CustomTarjeta extends HTMLElement {
 
-    static observedAttributes = ['titulo', 'descripcion', 'precio', 'variante', 'disabled'];
+    static observedAttributes = ['titulo', 'descripcion', 'precio', 'variante', 'disabled', 'uid', 'imagen'];
     static _template;
 
     _isRendered = false;
@@ -14,6 +14,7 @@ class CustomTarjeta extends HTMLElement {
     #titulo;
     #descripcion;
     #precio;
+    #imagen;
     #boton;
 
     constructor() {
@@ -23,7 +24,7 @@ class CustomTarjeta extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomTarjeta._template) {
-            CustomTarjeta._template = fetch('/js/boundary/components/tarjeta/tarjetaPlantilla.html')
+            CustomTarjeta._template = fetch('./js/boundary/components/tarjeta/tarjetaPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
@@ -45,6 +46,7 @@ class CustomTarjeta extends HTMLElement {
                 this.#titulo = this.shadowRoot.querySelector('.tarjeta__titulo');
                 this.#descripcion = this.shadowRoot.querySelector('.tarjeta__descripcion');
                 this.#precio = this.shadowRoot.querySelector('.tarjeta__precio');
+                this.#imagen = this.shadowRoot.querySelector('.tarjeta__imagen');
                 this.#boton = this.shadowRoot.querySelector('.tarjeta__agregar');
                 this.#boton.addEventListener('click', () => {
                     this.dispatchEvent(new CustomEvent('tarjeta-agregar', {
@@ -78,6 +80,16 @@ class CustomTarjeta extends HTMLElement {
         this.#descripcion.textContent = this.getAttribute('descripcion') ?? '';
         this.#precio.textContent = this.getAttribute('precio') ?? '';
         this.#boton.disabled = this.hasAttribute('disabled');
+
+        const uid = this.getAttribute('uid') ?? this.getAttribute('id') ?? '';
+        const imagenPorDefecto = './assets/images/categorias/bebidas/americano.png';
+        this.#imagen.onerror = function() {
+            this.onerror = null;
+            this.src = imagenPorDefecto;
+        };
+        this.#imagen.src = this.getAttribute('imagen') ||
+            (uid ? `./assets/images/productos/${encodeURIComponent(uid)}.png` : imagenPorDefecto);
+        this.#imagen.alt = this.getAttribute('titulo') ?? '';
     }
 }
 

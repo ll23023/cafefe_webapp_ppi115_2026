@@ -10,7 +10,7 @@ class CambioPagina extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/js/boundary/components/cambioPagina/cambioPaginaEstilo.css"><a class="cambio-pagina" href="#"></a>';
+        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="./js/boundary/components/cambioPagina/cambioPaginaEstilo.css"><a class="cambio-pagina" href="#"></a>';
         this.#enlace = this.shadowRoot.querySelector('.cambio-pagina');
         this.#enlace.addEventListener('click', (evento) => { evento.preventDefault(); this.dispatchEvent(new CustomEvent('cambiar-pagina', { detail: { ruta: this.getAttribute('ruta') || '' }, bubbles: true, composed: true })); });
     }

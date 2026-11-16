@@ -22,7 +22,7 @@ class CustomBarraInferior extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomBarraInferior._template) {
-            CustomBarraInferior._template = fetch('/js/boundary/components/barraInferior/barraInferiorPlantilla.html')
+            CustomBarraInferior._template = fetch('./js/boundary/components/barraInferior/barraInferiorPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

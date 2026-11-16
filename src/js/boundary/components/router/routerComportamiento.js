@@ -11,7 +11,7 @@ class AppRouter extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/js/boundary/components/router/routerEstilo.css"><nav class="router" aria-label="Navegación"><slot></slot></nav>';
+        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="./js/boundary/components/router/routerEstilo.css"><nav class="router" aria-label="Navegación"><slot></slot></nav>';
         this.#rutas = this.shadowRoot.querySelector('.router');
         this.#rutas.addEventListener('cambiar-pagina', (evento) => this.navegar(evento.detail.ruta));
     }

@@ -22,7 +22,7 @@ class SpinnerNumerico extends HTMLElement {
 
     async _getTemplate() {
         if (!SpinnerNumerico._template) {
-            SpinnerNumerico._template = fetch('/js/boundary/components/spinnerNumerico/spinnerNumericoPlantilla.html')
+            SpinnerNumerico._template = fetch('./js/boundary/components/spinnerNumerico/spinnerNumericoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

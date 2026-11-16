@@ -4,10 +4,19 @@ import { CajaService } from './CajaService.js';
 import { MOCK_EMPLOYEES } from './mockEmployees.js';
 
 const CLAVE = 'cafefe-session';
-const normalizar = (valor) => String(valor ?? '').trim().toLowerCase();
+const normalizar = (valor) => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
 const nombreEmpleado = (empleado) => [empleado?.nombre, empleado?.apellido].filter(Boolean).join(' ').trim();
 const nombreRol = (empleado) => empleado?.empleadoRolList?.map((relacion) => relacion?.idRol?.nombre ?? relacion?.rol?.nombre ?? '').filter(Boolean) ?? [];
 const relacionEmpleado = (empleado) => empleado?.empleadoRolList?.find((relacion) => relacion?.idEmpleadoRol)?.idEmpleadoRol ?? null;
+
+function rolCanonico(valor) {
+    const rol = normalizar(valor);
+    if (/^(cajero|caja)$/.test(rol)) return 'cajero';
+    if (/barista/.test(rol)) return 'barista';
+    if (/cocinero|cocina/.test(rol)) return 'cocinero';
+    if (rol === 'cliente') return 'cliente';
+    return null;
+}
 
 export class Session {
     static #empleadoService = new EmpleadoService();
@@ -20,7 +29,10 @@ export class Session {
     }
 
     static guardar(datos) {
-        const sesion = { ...datos, creadaEn: new Date().toISOString() };
+        const sesion = {
+            ...datos,
+            creadaEn: datos.creadaEn ?? this.leer()?.creadaEn ?? new Date().toISOString()
+        };
         sessionStorage.setItem(CLAVE, JSON.stringify(sesion));
         return sesion;
     }
@@ -57,23 +69,53 @@ export class Session {
             }
         }
         const roles = nombreRol(empleado);
-        const rol = roles.find((valor) => /cajero|caja|barista|cocinero|cocina|camarero/i.test(valor)) ?? roles[0] ?? 'empleado';
-        const rolSesion = /cajero|caja|camarero/i.test(rol) ? 'caja' : normalizar(rol);
-        let caja = null;
-        if (rolSesion === 'caja') {
-            const cajas = (await this.#cajaService.findRange(0, 50)).registros.filter((registro) => registro.activo !== false);
-            caja = cajas[0] ?? null;
-            if (!caja) throw new Error('No existe una caja activa en la API.');
-        }
-        return this.guardar({ tipo: 'empleado', nombre: nombreEmpleado(empleado) || nombre, empleado, idEmpleadoRol: relacionEmpleado(empleado), idCaja: caja?.idCaja ?? null, rol: rolSesion, carrito: [], ordenes: [] });
+        const rol = roles.map(rolCanonico).find(Boolean);
+        if (!rol || rol === 'cliente') throw new Error('El usuario no tiene un rol de empleado autorizado.');
+
+        const sesion = this.guardar({
+            tipo: 'empleado',
+            nombre: nombreEmpleado(empleado) || nombre,
+            empleado,
+            idEmpleadoRol: relacionEmpleado(empleado),
+            rol,
+            caja: null,
+            idCaja: null,
+            carrito: [],
+            ordenes: []
+        });
+        return rol === 'cajero' ? this.asegurarCaja(sesion) : sesion;
     }
 
     static esCliente(sesion) { return sesion?.tipo === 'cliente'; }
     static esEmpleado(sesion) { return sesion?.tipo === 'empleado'; }
+    static esCajero(sesion) { return rolCanonico(sesion?.rol) === 'cajero'; }
+    static async asegurarCaja(sesion = this.leer()) {
+        if (!this.esCajero(sesion)) throw new Error('Solo un cajero puede vincular una caja.');
+        if (sesion.caja?.idCaja && sesion.idCaja === sesion.caja.idCaja) return sesion;
+
+        const cajas = (await this.#cajaService.findRange(0, 50)).registros
+            .filter((registro) => registro.activo !== false);
+        if (cajas.length !== 1) {
+            throw new Error(cajas.length
+                ? 'Se esperaba una única caja activa en la API.'
+                : 'No existe una caja activa en la API.');
+        }
+
+        const caja = cajas[0];
+        return this.guardar({ ...sesion, caja, idCaja: caja.idCaja });
+    }
+
+    static rutaInicial(sesion) {
+        if (this.esCliente(sesion)) return 'menu';
+        if (this.esCajero(sesion)) return 'pagos';
+        if (['barista', 'cocinero'].includes(rolCanonico(sesion?.rol))) return 'ordenes';
+        return null;
+    }
+
     static puedeVerRuta(sesion, ruta) {
         if (!sesion) return ruta === 'login';
         if (this.esCliente(sesion)) return ['menu', 'carrito'].includes(ruta);
-        if (/caja|cajero/.test(normalizar(sesion.rol))) return ruta === 'pagos';
-        return ruta === 'ordenes';
+        if (this.esCajero(sesion)) return ruta === 'pagos';
+        return ['barista', 'cocinero'].includes(rolCanonico(sesion.rol)) && ruta === 'ordenes';
     }
 }

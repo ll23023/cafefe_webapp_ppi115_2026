@@ -20,7 +20,7 @@ class CustomBotonRedondeado extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomBotonRedondeado._template) {
-            CustomBotonRedondeado._template = fetch('/js/boundary/components/botonRedondeado/botonRedondeadoPlantilla.html')
+            CustomBotonRedondeado._template = fetch('./js/boundary/components/botonRedondeado/botonRedondeadoPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

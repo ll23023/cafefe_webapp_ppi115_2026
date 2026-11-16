@@ -24,7 +24,7 @@ class CustomCheckbox extends HTMLElement {
 
     async _getTemplate() {
         if (!CustomCheckbox._template) {
-            CustomCheckbox._template = fetch('/js/boundary/components/checkbox/checkboxPlantilla.html')
+            CustomCheckbox._template = fetch('./js/boundary/components/checkbox/checkboxPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

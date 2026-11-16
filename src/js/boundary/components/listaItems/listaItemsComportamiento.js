@@ -18,7 +18,7 @@ class ListaItems extends HTMLElement {
 
     async _getTemplate() {
         if (!ListaItems._template) {
-            ListaItems._template = fetch('/js/boundary/components/listaItems/listaItemsPlantilla.html')
+            ListaItems._template = fetch('./js/boundary/components/listaItems/listaItemsPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();

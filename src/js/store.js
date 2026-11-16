@@ -4,12 +4,12 @@ import { TipoProductoService } from './control/TipoProductoService.js';
 import { ProductoTipoProductoService } from './control/ProductoTipoProductoService.js';
 
 const productos = [
-    { id: 'americano', titulo: 'Americano', categoria: 'Cafe', descripcion: 'Cafe filtrado y sedoso', precio: '$2.00', imagen: '/assets/icons/capuchino.png' },
-    { id: 'capuchino', titulo: 'Capuchino', categoria: 'Cafe', descripcion: 'Espuma de leche y cacao', precio: '$3.50', imagen: '/assets/icons/capuchino.png' },
-    { id: 'latte', titulo: 'Latte vainilla', categoria: 'Cafe', descripcion: 'Espresso, leche y vainilla', precio: '$4.25', imagen: '/assets/icons/capuchino.png' },
-    { id: 'te', titulo: 'Te chai', categoria: 'Te', descripcion: 'Especias, te negro y leche', precio: '$3.00', imagen: '/assets/icons/capuchino.png' },
-    { id: 'croissant', titulo: 'Croissant', categoria: 'Pan', descripcion: 'Horneado con mantequilla', precio: '$2.75', imagen: '/assets/icons/capuchino.png' },
-    { id: 'brownie', titulo: 'Brownie', categoria: 'Dulce', descripcion: 'Chocolate intenso y nueces', precio: '$3.25', imagen: '/assets/icons/capuchino.png' }
+    { id: 'americano', uid: 'americano', titulo: 'Americano', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Cafe filtrado y sedoso', precio: '$2.00', imagen: './assets/images/productos/americano.png' },
+    { id: 'capuchino', uid: 'capuchino', titulo: 'Capuchino', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Espuma de leche y cacao', precio: '$3.50', imagen: './assets/images/productos/capuchino.png' },
+    { id: 'latte', uid: 'latte', titulo: 'Latte vainilla', categoria: 'Cafe', categoriaUid: 'cafe', descripcion: 'Espresso, leche y vainilla', precio: '$4.25', imagen: './assets/images/productos/latte.png' },
+    { id: 'te', uid: 'te', titulo: 'Te chai', categoria: 'Te', categoriaUid: 'te', descripcion: 'Especias, te negro y leche', precio: '$3.00', imagen: './assets/images/productos/te.png' },
+    { id: 'croissant', uid: 'croissant', titulo: 'Croissant', categoria: 'Pan', categoriaUid: 'pan', descripcion: 'Horneado con mantequilla', precio: '$2.75', imagen: './assets/images/productos/croissant.png' },
+    { id: 'brownie', uid: 'brownie', titulo: 'Brownie', categoria: 'Dulce', categoriaUid: 'dulce', descripcion: 'Chocolate intenso y nueces', precio: '$3.25', imagen: './assets/images/productos/brownie.png' }
 ];
 
 const ordenes = [
@@ -32,7 +32,15 @@ const estado = {
     ordenes: ordenesGuardadas ?? (sesionInicial?.ordenes?.length ? sesionInicial.ordenes : ordenes.map((orden) => ({ ...orden, items: orden.items.map((item) => ({ ...item })) })))
 };
 const listeners = new Set();
-const catalogo = { productos: [...productos], categorias: ['Cafe', 'Te', 'Pan', 'Dulce'] };
+const catalogo = {
+    productos: [...productos],
+    categorias: [
+        { id: 'cafe', nombre: 'Cafe' },
+        { id: 'te', nombre: 'Te' },
+        { id: 'pan', nombre: 'Pan' },
+        { id: 'dulce', nombre: 'Dulce' }
+    ]
+};
 const emitir = () => {
     localStorage.setItem(ORDENES_CLAVE, JSON.stringify(estado.ordenes));
     if (estado.sesion) Session.guardar({ ...estado.sesion, carrito: estado.carrito, ordenes: estado.ordenes });
@@ -61,21 +69,26 @@ export const store = {
                 new TipoProductoService().findRange(0, 50),
                 new ProductoTipoProductoService().findRange(0, 50)
             ]);
-            const tipos = new Map(respuestaTipos.registros.map((tipo) => [tipo.idTipoProducto, tipo.nombre]));
+            const tipos = new Map(respuestaTipos.registros.map((tipo) => [
+                tipo.uid ?? tipo.idTipoProducto ?? tipo.id,
+                { id: tipo.uid ?? tipo.idTipoProducto ?? tipo.id, nombre: tipo.nombre }
+            ]));
             const categoriaPorProducto = new Map(respuestaRelaciones.registros.map((relacion) => [
-                relacion.idProducto?.idProducto ?? relacion.idProducto,
-                relacion.idTipoProducto?.nombre ?? tipos.get(relacion.idTipoProducto?.idTipoProducto ?? relacion.idTipoProducto)
+                relacion.idProducto?.uid ?? relacion.idProducto?.idProducto ?? relacion.idProducto?.id ?? relacion.idProducto,
+                relacion.idTipoProducto?.uid ?? relacion.idTipoProducto?.idTipoProducto ?? relacion.idTipoProducto?.id ?? relacion.idTipoProducto
             ]));
             const apiProductos = respuestaProductos.registros.filter((producto) => producto.activo !== false).map((producto) => ({
-                id: producto.idProducto,
+                id: producto.uid ?? producto.idProducto ?? producto.id,
+                uid: producto.uid ?? producto.idProducto ?? producto.id,
                 titulo: producto.nombre,
-                categoria: categoriaPorProducto.get(producto.idProducto) || 'Sin categoria',
+                categoriaUid: categoriaPorProducto.get(producto.uid ?? producto.idProducto ?? producto.id) ?? null,
+                categoria: tipos.get(categoriaPorProducto.get(producto.uid ?? producto.idProducto ?? producto.id))?.nombre || 'Sin categoria',
                 descripcion: producto.comentarios || 'Producto de Cafefe',
                 precio: `$${Number(producto.precioSugerido ?? 0).toFixed(2)}`,
-                imagen: '/assets/icons/capuchino.png'
+                imagen: `./assets/images/productos/${encodeURIComponent(producto.uid ?? producto.idProducto ?? producto.id)}.png`
             }));
             if (apiProductos.length) catalogo.productos = apiProductos;
-            const apiCategorias = [...new Set(respuestaRelaciones.registros.map((relacion) => relacion.idTipoProducto?.nombre ?? tipos.get(relacion.idTipoProducto?.idTipoProducto ?? relacion.idTipoProducto)).filter(Boolean))];
+            const apiCategorias = [...tipos.values()].filter((tipo) => tipo.id && tipo.nombre);
             if (apiCategorias.length) catalogo.categorias = apiCategorias;
         } catch (error) {
             console.warn('Se conserva el catalogo temporal:', error.message);

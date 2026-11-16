@@ -22,7 +22,7 @@ class CarruselFiltros extends HTMLElement {
 
     async _getTemplate() {
         if (!CarruselFiltros._template) {
-            CarruselFiltros._template = fetch('/js/boundary/components/carruselFiltros/carruselFiltrosPlantilla.html')
+            CarruselFiltros._template = fetch('./js/boundary/components/carruselFiltros/carruselFiltrosPlantilla.html')
                 .then((response) => {
                     if (!response.ok) throw new Error(`Error al cargar la plantilla: ${response.statusText}`);
                     return response.text();
@@ -62,7 +62,10 @@ class CarruselFiltros extends HTMLElement {
         for (const filtro of Array.isArray(filtros) ? filtros : []) {
             const elemento = document.createElement('filtro-circular');
             const id = typeof filtro === 'object' ? filtro.filtroId ?? filtro.id ?? '' : filtro;
-            if (id) elemento.setAttribute('filtroId', id);
+            if (id) {
+                elemento.setAttribute('filtroId', id);
+                elemento.setAttribute('nombre', typeof filtro === 'object' ? filtro.nombre ?? String(id) : String(id));
+            }
             this._filtros.appendChild(elemento);
         }
     }

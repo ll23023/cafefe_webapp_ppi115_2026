@@ -1,0 +1,23 @@
+{
+  "name": "Cafefe",
+  "short_name": "Cafefe",
+  "start_url": "./src/index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FEFBF8",
+  "theme_color": "#3F1D0E",
+  "icons": [
+    {
+      "src": "./src/assets/images/cafefeLogo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./src/assets/icons/CarritoCompra.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

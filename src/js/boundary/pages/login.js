@@ -1,7 +1,7 @@
 export function renderLogin({ onLogin }) {
     const view = document.createElement('section');
     view.className = 'login-fondo';
-    view.innerHTML = `<main class="login-panel"><img class="login-logo" src="/assets/images/cafefeLogo.png" alt="Logo Cafefe"><form class="login-form"><custom-text label="Usuario" name="usuario" required></custom-text><custom-text label="Contrasena" name="contrasena" type="password"></custom-text><p class="login-error" role="alert" hidden></p><div class="login-acciones"><custom-checkbox label="Recordarme" name="recordarme"></custom-checkbox><custom-boton-redondeado texto="Ingresar"></custom-boton-redondeado></div></form></main>`;
+    view.innerHTML = `<main class="login-panel"><img class="login-logo" src="./assets/images/cafefeLogo.png" alt="Logo Cafefe"><form class="login-form"><custom-text label="Usuario" name="usuario" required></custom-text><custom-text label="Contrasena" name="contrasena" type="password"></custom-text><p class="login-error" role="alert" hidden></p><div class="login-acciones"><custom-checkbox label="Recordarme" name="recordarme"></custom-checkbox><custom-boton-redondeado texto="Ingresar"></custom-boton-redondeado></div></form></main>`;
     const form = view.querySelector('form');
     const error = view.querySelector('.login-error');
     view.querySelector('custom-boton-redondeado').addEventListener('click', () => {

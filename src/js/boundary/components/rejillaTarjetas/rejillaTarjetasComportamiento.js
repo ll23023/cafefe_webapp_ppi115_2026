@@ -10,7 +10,7 @@ class RejillaTarjetas extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="/js/boundary/components/rejillaTarjetas/rejillaTarjetasEstilo.css"><section class="rejilla-tarjetas" aria-label="Productos"></section>';
+        this.shadowRoot.innerHTML = '<link rel="stylesheet" href="./js/boundary/components/rejillaTarjetas/rejillaTarjetasEstilo.css"><section class="rejilla-tarjetas" aria-label="Productos"></section>';
         this.#rejilla = this.shadowRoot.querySelector('.rejilla-tarjetas');
     }
 
@@ -24,7 +24,7 @@ class RejillaTarjetas extends HTMLElement {
         this.#rejilla.replaceChildren();
         for (const registro of Array.isArray(registros) ? registros : []) {
             const tarjeta = document.createElement('custom-tarjeta');
-            for (const atributo of ['titulo', 'descripcion', 'precio', 'variante']) {
+            for (const atributo of ['uid', 'imagen', 'titulo', 'descripcion', 'precio', 'variante']) {
                 if (registro?.[atributo] != null) tarjeta.setAttribute(atributo, registro[atributo]);
             }
             this.#rejilla.appendChild(tarjeta);

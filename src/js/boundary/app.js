@@ -10,12 +10,18 @@ import { Session } from '../control/Session.js';
 export function iniciarAplicacion() {
     const app = document.querySelector('#app');
     const render = () => {
-        const ruta = (window.location.hash.replace(/^#\/?/, '') || (store.estado.usuario ? 'menu' : 'login')).split('/')[0];
+        const rutaInicial = Session.rutaInicial(store.estado.sesion) ?? 'login';
+        const ruta = (window.location.hash.replace(/^#\/?/, '') || rutaInicial).split('/')[0];
         app.replaceChildren();
         if (!store.estado.sesion && ruta !== 'login') { window.location.hash = '#/login'; return; }
-        if (ruta === 'login') { app.appendChild(renderLogin({ onLogin })); return; }
+        if (!store.estado.sesion && ruta === 'login') { app.appendChild(renderLogin({ onLogin })); return; }
         if (!Session.puedeVerRuta(store.estado.sesion, ruta)) {
-            const destino = Session.esCliente(store.estado.sesion) ? 'menu' : /caja|cajero/.test(store.estado.sesion.rol) ? 'pagos' : 'ordenes';
+            const destino = Session.rutaInicial(store.estado.sesion);
+            if (!destino) {
+                store.cerrarSesion();
+                window.location.hash = '#/login';
+                return;
+            }
             window.location.hash = `#/${destino}`;
             return;
         }
@@ -35,8 +41,7 @@ export function iniciarAplicacion() {
             store.estado.usuario = sesion.nombre;
             store.estado.carrito = sesion.carrito ?? [];
             if (!store.estado.ordenes.length && sesion.ordenes?.length) store.estado.ordenes = sesion.ordenes;
-            const destino = Session.esCliente(sesion) ? 'menu' : /caja|cajero/.test(sesion.rol) ? 'pagos' : 'ordenes';
-            window.location.hash = `#/${destino}`;
+            window.location.hash = `#/${Session.rutaInicial(sesion)}`;
         } catch (exception) {
             error.hidden = false;
             error.textContent = exception.message;
