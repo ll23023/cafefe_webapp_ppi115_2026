@@ -44,6 +44,12 @@ class CarruselFiltros extends HTMLElement {
                 this._siguiente.addEventListener('click', () => this._desplazar(1));
                 this._actualizarOverflow = () => this._actualizarBotones();
                 this._filtros.addEventListener('scroll', this._actualizarOverflow, { passive: true });
+                this._filtros.addEventListener('filtro-seleccionado', (event) => {
+                    if (!event.detail?.activo) return;
+                    this._filtros.querySelectorAll('filtro-circular').forEach((filtro) => {
+                        if (filtro !== event.target) filtro.deseleccionar();
+                    });
+                });
                 if (typeof ResizeObserver === 'function') {
                     this._observadorTamano = new ResizeObserver(this._actualizarOverflow);
                 }
@@ -59,8 +65,13 @@ class CarruselFiltros extends HTMLElement {
         let filtros = [];
         try {
             filtros = JSON.parse(this.getAttribute('filtros') || '[]');
+            if (!Array.isArray(filtros)) {
+                throw new TypeError('Los filtros del carrusel deben ser un arreglo.');
+            }
         } catch (error) {
+            console.error('No se pudieron interpretar las categorías del carrusel:', error);
             this.dispatchEvent(new CustomEvent('error-carrusel', { detail: error, bubbles: true, composed: true }));
+            filtros = [];
         }
 
         this._observadorTamano?.disconnect();
@@ -68,7 +79,7 @@ class CarruselFiltros extends HTMLElement {
         this._filtros.replaceChildren();
         for (const filtro of Array.isArray(filtros) ? filtros : []) {
             const elemento = document.createElement('filtro-circular');
-            const id = typeof filtro === 'object'
+            const id = filtro && typeof filtro === 'object'
                 ? filtro.uid ?? filtro.idTipoProducto ?? filtro.filtroId ?? filtro.id ?? ''
                 : filtro;
             if (id) {

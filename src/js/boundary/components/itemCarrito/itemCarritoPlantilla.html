@@ -1,7 +1,7 @@
 <template item-carrito-plantilla>
     <link rel="stylesheet" href="./js/boundary/components/itemCarrito/itemCarritoEstilo.css">
     <article class="item-carrito">
-        <img class="item-carrito__imagen" alt="">
+        <img class="item-carrito__imagen" width="50" height="50" alt="">
         <span class="item-carrito__separador" aria-hidden="true"></span>
         <div class="item-carrito__contenido">
             <h4 class="item-carrito__titulo"></h4>
@@ -9,6 +9,6 @@
             <span class="item-carrito__precio"></span>
         </div>
         <spinner-numerico class="item-carrito__cantidad" min="1" value="1" label="Cantidad"></spinner-numerico>
-        <custom-boton-circular class="item-carrito__eliminar" aria-label="Eliminar"></custom-boton-circular>
+        <custom-boton-circular class="item-carrito__eliminar" aria-label="Eliminar" texto="-"></custom-boton-circular>
     </article>
 </template>

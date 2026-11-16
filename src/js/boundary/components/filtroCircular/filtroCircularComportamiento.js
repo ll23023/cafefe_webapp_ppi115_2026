@@ -86,8 +86,9 @@ class FiltroCircular extends HTMLElement {
                 // TODO: Agregar la lógica para obtener una lista de entidades filtradas según el filtro seleccionado.
                 this._estaActivo = event.target.checked;
                 this.shadowRoot.querySelector('.filtroCircular__contenido').classList.toggle('seleccionado');
+                const uid = String(this._filtroId ?? '').trim();
                 this.dispatchEvent(new CustomEvent('filtro-seleccionado', {
-                    detail: { categoria: this._filtroId, activo: this._estaActivo },
+                    detail: { categoria: uid, uid, activo: this._estaActivo },
                     bubbles: true,
                     composed: true
                 }));
@@ -108,6 +109,14 @@ class FiltroCircular extends HTMLElement {
             ? `./assets/icons/${encodeURIComponent(this._filtroId)}.png`
             : imagenPorDefecto;
         imagen.alt = this.getAttribute('nombre') || this._filtroId || 'Categoria';
+    }
+
+    deseleccionar() {
+        const checkbox = this.shadowRoot.querySelector('.filtroCircular__checkbox');
+        if (!checkbox || !checkbox.checked) return;
+        checkbox.checked = false;
+        this._estaActivo = false;
+        this.shadowRoot.querySelector('.filtroCircular__contenido').classList.remove('seleccionado');
     }
 
 

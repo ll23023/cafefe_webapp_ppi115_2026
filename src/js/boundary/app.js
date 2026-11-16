@@ -9,9 +9,11 @@ import { Session } from '../control/Session.js';
 
 export function iniciarAplicacion() {
     const app = document.querySelector('#app');
+    let rutaActual = null;
     const render = () => {
         const rutaInicial = Session.rutaInicial(store.estado.sesion) ?? 'login';
         const ruta = (window.location.hash.replace(/^#\/?/, '') || rutaInicial).split('/')[0];
+        rutaActual = ruta;
         app.replaceChildren();
         if (!store.estado.sesion && ruta !== 'login') { window.location.hash = '#/login'; return; }
         if (!store.estado.sesion && ruta === 'login') { app.appendChild(renderLogin({ onLogin })); return; }
@@ -51,7 +53,14 @@ export function iniciarAplicacion() {
     window.addEventListener('hashchange', render);
     window.addEventListener('online', render);
     window.addEventListener('offline', render);
-    store.suscribir(render);
+    store.suscribir((estado, cambio) => {
+        if (cambio === 'carrito' && rutaActual === 'menu') {
+            const contador = app.querySelector('.page-header .status-filter');
+            if (contador) contador.textContent = `${estado.carrito.length} productos`;
+            return;
+        }
+        render();
+    });
     app.innerHTML = '<p class="app-loading">Cargando Cafefe...</p>';
     store.cargarCatalogo().finally(render);
 }

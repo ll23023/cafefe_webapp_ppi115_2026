@@ -7,7 +7,7 @@ import { ProductoTipoProducto } from '../entity/ProductoTipoProducto.js';
  */
 export class ProductoTipoProductoService extends BaseService {
     constructor() {
-        super(ProductoTipoProducto.ENDPOINT, ProductoTipoProducto);
+        super(ProductoTipoProducto.ENDPOINT, ProductoTipoProducto, 'desde-hasta');
     }
 
     findByProducto(idProducto, first = 0, max = 50) {

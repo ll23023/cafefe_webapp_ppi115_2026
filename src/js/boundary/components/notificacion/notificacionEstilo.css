@@ -28,6 +28,7 @@
     border: 1px solid var(--notificacion-barra);
     border-radius: var(--radio-borde, 10px);
     box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
+    animation: notificacion-entrada 180ms ease-out both;
 }
 
 :host([tipo="fracaso"]) .notificacion {
@@ -82,5 +83,22 @@
 @keyframes notificacion-temporizador {
     to {
         transform: scaleX(0);
+    }
+}
+
+@keyframes notificacion-entrada {
+    from {
+        opacity: 0;
+        transform: translate(0.35rem, -0.35rem);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notificacion {
+        animation: none;
     }
 }

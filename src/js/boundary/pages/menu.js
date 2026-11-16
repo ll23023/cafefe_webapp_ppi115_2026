@@ -1,5 +1,17 @@
 import { mostrarNotificacion } from '../helpers/notificaciones.js';
 
+const normalizarId = (valor) => String(valor ?? '').trim().toLowerCase();
+const normalizarNombre = (valor) => String(valor ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+const extraerId = (valor) => {
+    if (typeof valor === 'string' || typeof valor === 'number') return normalizarId(valor);
+    if (!valor || typeof valor !== 'object') return '';
+    return normalizarId(valor.uid ?? valor.idTipoProducto ?? valor.id ?? '');
+};
+
 export function renderMenu(store, navigate) {
     const view = document.createElement('section');
     const categorias = store.categorias.map((categoria) => typeof categoria === 'string'
@@ -33,12 +45,34 @@ export function renderMenu(store, navigate) {
     const rejilla = view.querySelector('rejilla-tarjetas');
     const categoriasSeleccionadas = new Set();
     view.addEventListener('filtro-seleccionado', (event) => {
-        const { categoria, activo } = event.detail;
-        if (activo) categoriasSeleccionadas.add(categoria);
-        else categoriasSeleccionadas.delete(categoria);
+        const categoria = normalizarId(event.detail.uid ?? event.detail.categoria);
+        if (!categoria) return;
+        categoriasSeleccionadas.clear();
+        if (event.detail.activo) categoriasSeleccionadas.add(categoria);
         if (!rejilla) return;
+        const nombresSeleccionados = new Set(store.categorias
+            .filter((tipo) => categoriasSeleccionadas.has(normalizarId(tipo.uid ?? tipo.id)))
+            .map((tipo) => normalizarNombre(tipo.nombre)));
         const registros = categoriasSeleccionadas.size
-            ? store.productos.filter((producto) => categoriasSeleccionadas.has(producto.categoriaUid ?? producto.categoria))
+            ? store.productos.filter((producto) => {
+                const ids = [
+                    ...(Array.isArray(producto.categoriaUids) ? producto.categoriaUids : []),
+                    producto.categoriaUid,
+                    producto.uidTipoProducto,
+                    producto.idTipoProducto,
+                    producto.tipoProducto?.uid,
+                    producto.tipoProducto?.idTipoProducto,
+                    producto.categoria?.uid,
+                    producto.categoria?.idTipoProducto
+                ].map(extraerId).filter(Boolean);
+                const nombres = [
+                    typeof producto.categoria === 'string' ? producto.categoria : '',
+                    producto.categoria?.nombre,
+                    producto.tipoProducto?.nombre
+                ].map(normalizarNombre).filter(Boolean);
+                return ids.some((id) => categoriasSeleccionadas.has(id)) ||
+                    nombres.some((nombre) => nombresSeleccionados.has(nombre));
+            })
             : store.productos;
         rejilla.setAttribute('registros', JSON.stringify(registros));
     });

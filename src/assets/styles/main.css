@@ -264,9 +264,16 @@ button {
 
 .toast {
     position: fixed;
+    top: 80px;
     right: var(--margen-defecto);
-    bottom: calc(var(--margen-defecto) * 5);
-    z-index: 30;
+    bottom: auto;
+    left: auto;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast custom-notificacion {
+    pointer-events: auto;
 }
 
 .order-list {
@@ -420,6 +427,11 @@ rejilla-tarjetas {
     .nav {
         order: 3;
         width: 100%;
+    }
+
+    .toast {
+        top: 130px;
+        right: 12px;
     }
 
     .orders-grid {

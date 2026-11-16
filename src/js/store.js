@@ -57,16 +57,17 @@ const catalogo = {
     estadoProductos: 'cargando',
     estadoCategorias: 'cargando'
 };
-const emitir = () => {
+const emitir = (cambio = 'estado') => {
     localStorage.setItem(ORDENES_CLAVE, JSON.stringify(estado.ordenes));
     if (estado.sesion) Session.guardar({ ...estado.sesion, carrito: estado.carrito, ordenes: estado.ordenes });
-    listeners.forEach((listener) => listener(estado));
+    listeners.forEach((listener) => listener(estado, cambio));
 };
 
 const idDe = (valor, ...claves) => {
-    if (typeof valor === 'string') return valor;
+    if (typeof valor === 'string') return valor.trim().toLowerCase();
     if (!valor || typeof valor !== 'object') return null;
-    return claves.map((clave) => valor[clave]).find(Boolean) ?? null;
+    const id = claves.map((clave) => valor[clave]).find(Boolean);
+    return id == null ? null : String(id).trim().toLowerCase();
 };
 
 export const store = {
@@ -108,7 +109,7 @@ export const store = {
         const [productosResultado, categoriasResultado, relacionesResultado] = await Promise.allSettled([
             new ProductoService().findRange(0, 50),
             new TipoProductoService().findAll(),
-            new ProductoTipoProductoService().findRange(0, 50)
+            new ProductoTipoProductoService().findAll()
         ]);
 
         const tipos = categoriasResultado.status === 'fulfilled'
@@ -140,27 +141,45 @@ export const store = {
             console.error('No se pudieron obtener las categorías asociadas a los productos:', relacionesResultado.reason);
         }
 
-        const categoriaPorProducto = new Map(relaciones.map((relacion) => {
+        const categoriasPorProducto = new Map();
+        relaciones.forEach((relacion) => {
             const productoId = idDe(relacion.idProducto, 'uid', 'idProducto', 'id');
             const tipoId = idDe(relacion.idTipoProducto, 'uid', 'idTipoProducto', 'id');
-            return [productoId, {
-                id: tipoId,
-                nombre: tiposPorId.get(tipoId)?.nombre ?? relacion.idTipoProducto?.nombre ?? ''
-            }];
-        }).filter(([productoId]) => productoId));
+            if (!productoId || !tipoId) return;
+
+            const categorias = categoriasPorProducto.get(productoId) ?? [];
+            if (!categorias.includes(tipoId)) categorias.push(tipoId);
+            categoriasPorProducto.set(productoId, categorias);
+        });
 
         if (productosResultado.status === 'fulfilled') {
             catalogo.productos = productosResultado.value.registros
                 .filter((producto) => producto.activo !== false)
                 .map((producto) => {
-                    const uid = producto.idProducto;
-                    const categoria = categoriaPorProducto.get(uid);
-                    const nombreCategoria = categoria?.nombre ?? producto.tipoProducto?.nombre ?? '';
+                    const uid = idDe(producto, 'uid', 'idProducto', 'id');
+                    const tiposDirectos = [
+                        idDe(producto.uidTipoProducto, 'uid', 'idTipoProducto', 'id'),
+                        idDe(producto.idTipoProducto, 'uid', 'idTipoProducto', 'id'),
+                        idDe(producto.tipoProducto, 'uid', 'idTipoProducto', 'id'),
+                        idDe(producto.categoria, 'uid', 'idTipoProducto', 'id')
+                    ].map((id) => id == null ? null : String(id).trim().toLowerCase()).filter(Boolean);
+                    const categoriaUids = [...new Set([
+                        ...(categoriasPorProducto.get(uid) ?? []),
+                        ...tiposDirectos
+                    ])];
+                    const categoria = categoriaUids
+                        .map((categoriaUid) => tiposPorId.get(categoriaUid))
+                        .find(Boolean);
+                    const nombreCategoria = categoria?.nombre ||
+                        (typeof producto.categoria === 'string' ? producto.categoria : '') ||
+                        producto.categoria?.nombre ||
+                        producto.tipoProducto?.nombre || '';
                     return {
                         id: uid,
                         uid,
                         titulo: producto.nombre,
-                        categoriaUid: categoria?.id ?? null,
+                        categoriaUid: categoriaUids[0] ?? null,
+                        categoriaUids,
                         categoria: nombreCategoria || 'Sin categoría',
                         descripcion: producto.comentarios || 'Producto de Cafefe',
                         precio: `$${Number(producto.precioSugerido ?? 0).toFixed(2)}`
@@ -178,7 +197,7 @@ export const store = {
         const existente = estado.carrito.find((item) => item.id === producto.id);
         if (existente) existente.cantidad += 1;
         else estado.carrito.push({ ...producto, cantidad: 1 });
-        emitir();
+        emitir('carrito');
     },
     actualizarCantidad(id, cantidad) {
         const item = estado.carrito.find((producto) => producto.id === id);

@@ -1,10 +1,10 @@
 const CACHE_PREFIX = 'cafefe-';
-const STATIC_CACHE = `${CACHE_PREFIX}static-v1`;
+const STATIC_CACHE = `${CACHE_PREFIX}static-v2`;
 const API_CACHE = `${CACHE_PREFIX}api-v1`;
 const API_ORIGIN = 'http://localhost:9080';
 const API_PREFIX = '/Cafefe/resources/v1/';
 const CACHEABLE_API_PATH = /^\/Cafefe\/resources\/v1\/(?:producto|tipo_producto|producto_tipo_producto|caja|orden|orden_producto)(?:\/|$)/;
-const STATIC_ASSET_PATH = /\.(?:html|css|js|mjs|png|jpe?g|svg|webp|gif|ico|woff2?)$/i;
+const STATIC_ASSET_PATH = /\.(?:html|css|js|mjs|json|png|jpe?g|svg|webp|gif|ico|woff2?)$/i;
 
 function isInScope(url) {
   const scope = new URL(self.registration.scope);
@@ -88,6 +88,8 @@ self.addEventListener('install', (event) => {
       'src/assets/styles/main.css',
       'src/assets/styles/variables.css',
       'src/assets/images/cafefeLogo.png',
+      'src/assets/images/cafefeLogo-192.png',
+      'src/assets/images/cafefeLogo-512.png',
       'src/js/boundary/main.js'
     ].map((path) => new URL(path, self.registration.scope).href);
     await cache.addAll(resources);

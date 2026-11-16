@@ -1,43 +1,65 @@
-let deferredInstallPrompt = null;
+import { mostrarNotificacion } from '../helpers/notificaciones.js';
 
 function aplicacionInstalada() {
-    return window.matchMedia?.('(display-mode: standalone)').matches === true ||
+    return window.cafefePwaInstalled === true ||
+        window.matchMedia?.('(display-mode: standalone)').matches === true ||
         navigator.standalone === true;
 }
 
 function actualizarBotonesInstalacion() {
-    const mostrar = Boolean(deferredInstallPrompt) && !aplicacionInstalada();
+    const ocultar = aplicacionInstalada();
     document.querySelectorAll('.install-app').forEach((contenedor) => {
-        contenedor.hidden = !mostrar;
+        contenedor.hidden = ocultar;
     });
 }
 
-async function solicitarInstalacion() {
-    const evento = deferredInstallPrompt;
-    if (!evento || aplicacionInstalada()) return;
+function diagnosticarInstalacion() {
+    if (aplicacionInstalada()) {
+        const mensaje = 'La aplicación ya está instalada o se está ejecutando en modo independiente.';
+        console.info(mensaje);
+        mostrarNotificacion(mensaje, 'exito');
+        return;
+    }
 
-    deferredInstallPrompt = null;
-    actualizarBotonesInstalacion();
+    const causas = [];
+    if (!window.isSecureContext) {
+        causas.push('El contexto no es seguro; usa localhost o HTTPS.');
+    }
+    if (!('serviceWorker' in navigator)) {
+        causas.push('Este navegador no soporta Service Workers.');
+    } else if (!navigator.serviceWorker.controller) {
+        causas.push('El Service Worker aún no controla esta página; verifica su registro y vuelve a cargar.');
+    }
+
+    if (causas.length === 0) {
+        causas.push('El navegador no ha emitido beforeinstallprompt; puede no soportar la instalación o faltar algún criterio de Chromium.');
+    }
+
+    const mensaje = causas.join(' ');
+    console.warn('No está disponible la instalación de la PWA:', mensaje);
+    mostrarNotificacion(mensaje, 'fracaso');
+}
+
+async function solicitarInstalacion() {
+    if (aplicacionInstalada() || !window.deferredInstallPrompt) {
+        diagnosticarInstalacion();
+        actualizarBotonesInstalacion();
+        return;
+    }
+
+    const evento = window.deferredInstallPrompt;
     try {
         await evento.prompt();
         await evento.userChoice;
     } catch (error) {
         console.error('No se pudo iniciar la instalación de la aplicación:', error);
     } finally {
+        if (window.deferredInstallPrompt === evento) {
+            window.deferredInstallPrompt = null;
+        }
         actualizarBotonesInstalacion();
     }
 }
-
-window.addEventListener('beforeinstallprompt', (evento) => {
-    evento.preventDefault();
-    deferredInstallPrompt = evento;
-    actualizarBotonesInstalacion();
-});
-
-window.addEventListener('appinstalled', () => {
-    deferredInstallPrompt = null;
-    actualizarBotonesInstalacion();
-});
 
 export function layout(contenido, ruta, sesion, onLogout, store) {
     const shell = document.createElement('div');
@@ -62,7 +84,7 @@ export function layout(contenido, ruta, sesion, onLogout, store) {
         connectionBanner.textContent = `Hay ${queuedOrders} orden(es) pendientes. Se requiere una actualización de la API para sincronizarlas de forma segura; no se pueden pagar todavía.`;
     }
     const instalador = shell.querySelector('.install-app');
-    instalador.hidden = !deferredInstallPrompt || aplicacionInstalada();
+    instalador.hidden = aplicacionInstalada();
     instalador.addEventListener('click', solicitarInstalacion);
     shell.querySelector(`[data-route="${ruta}"]`)?.setAttribute('aria-current', 'page');
     const avatar = shell.querySelector('.avatar');

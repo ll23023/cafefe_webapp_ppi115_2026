@@ -63,6 +63,21 @@ export class BaseService {
     };
   }
 
+  async findAll(limite = 50) {
+    const registros = [];
+    let total = Number.POSITIVE_INFINITY;
+
+    while (registros.length < total) {
+      const pagina = await this.findRange(registros.length, limite);
+      registros.push(...pagina.registros);
+      total = pagina.total;
+
+      if (pagina.registros.length < limite || registros.length >= total) break;
+    }
+
+    return { registros, total: registros.length };
+  }
+
   async findById(id) {
     const res = await ApiClient.request(`/${this.endpoint}/${id}`);
     return this.hidratar(await res.json());
