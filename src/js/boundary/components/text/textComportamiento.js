@@ -36,7 +36,7 @@ class CustomText extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomText._template) {
             CustomText._template = fetch('./js/boundary/components/text/textPlantilla.html')
                 .then((response) => {
@@ -53,7 +53,7 @@ class CustomText extends HTMLElement {
         return CustomText._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -81,13 +81,14 @@ class CustomText extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         if (!this.#inicializado) {
             const valorInicial = this.getAttribute('value');
             if (valorInicial !== null) this.#input.value = valorInicial;
             this.#inicializado = true;
         }
         this.#render();
+        });
     }
 
     connectedCallback() {

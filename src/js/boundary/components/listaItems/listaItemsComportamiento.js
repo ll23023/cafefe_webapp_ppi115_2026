@@ -16,7 +16,7 @@ class ListaItems extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!ListaItems._template) {
             ListaItems._template = fetch('./js/boundary/components/listaItems/listaItemsPlantilla.html')
                 .then((response) => {
@@ -29,7 +29,7 @@ class ListaItems extends HTMLElement {
         return ListaItems._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -37,7 +37,7 @@ class ListaItems extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
 
         let items = [];
         try {
@@ -55,6 +55,7 @@ class ListaItems extends HTMLElement {
             }
             this._lista.appendChild(elemento);
         }
+        });
     }
 
     connectedCallback() {

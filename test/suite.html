@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Suite de pruebas Cafefe</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, sans-serif;
+      color: #242b2a;
+      background: #edf1ed;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 1rem clamp(1rem, 3vw, 2rem);
+      background: #fff;
+      border-bottom: 1px solid #cbd4ce;
+    }
+    h1 { margin: 0 auto 0 0; font-size: 1.25rem; }
+    .acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    button, select {
+      min-height: 2.5rem;
+      padding: 0.5rem 0.75rem;
+      color: inherit;
+      background: #fff;
+      border: 1px solid #87958d;
+      border-radius: 4px;
+      font: inherit;
+    }
+    button { cursor: pointer; }
+    button:hover { background: #e4eee7; }
+    #estado { flex-basis: 100%; color: #53615a; }
+    main { padding: 1rem clamp(1rem, 3vw, 2rem) 2rem; }
+    #pruebas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 34rem), 1fr));
+      gap: 1rem;
+      align-items: start;
+    }
+    .prueba {
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #cbd4ce;
+      border-radius: 4px;
+    }
+    .prueba h2 {
+      margin: 0;
+      padding: 0.7rem 0.85rem;
+      overflow-wrap: anywhere;
+      color: #fff;
+      background: #315947;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    iframe { display: block; width: 100%; height: 28rem; border: 0; background: #fff; }
+    .vacio { padding: 1.5rem; color: #53615a; }
+    @media (max-width: 700px) {
+      header { position: static; }
+      h1 { flex-basis: 100%; }
+      .acciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+      iframe { height: 24rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Suite de pruebas Cafefe</h1>
+    <label for="grupo">Grupo</label>
+    <select id="grupo">
+      <option value="todas">Todas las pruebas</option>
+      <option value="unitarias">Unitarias</option>
+      <option value="integracion">Integración API</option>
+      <option value="modelos">Modelos</option>
+      <option value="componentes">Componentes</option>
+      <option value="consolidada">Servicios y modelos consolidada</option>
+    </select>
+    <div class="acciones">
+      <button id="ejecutar" type="button">Ejecutar grupo</button>
+      <button id="limpiar" type="button">Limpiar resultados</button>
+    </div>
+    <div id="estado" role="status" aria-live="polite">Elige un grupo para cargar sus pruebas.</div>
+  </header>
+  <main><div id="pruebas"><p class="vacio">Las pruebas aparecerán aquí al ejecutar un grupo.</p></div></main>
+  <script type="module">
+    const paginas = [
+      'cajaModelTest.html', 'cajaServiceIt.html', 'cajaServiceTest.html',
+      'caracteristicaModelTest.html', 'caracteristicaServiceIt.html', 'caracteristicaServiceTest.html',
+      'descuentoModelTest.html', 'descuentoProductoModelTest.html', 'descuentoProductoServiceIt.html', 'descuentoProductoServiceTest.html',
+      'descuentoServiceIt.html', 'descuentoServiceTest.html', 'empleadoModelTest.html', 'empleadoRolModelTest.html',
+      'empleadoRolServiceIt.html', 'empleadoRolServiceTest.html', 'empleadoServiceIt.html', 'empleadoServiceTest.html',
+      'facturaModelTest.html', 'facturaOrdenProductoModelTest.html', 'facturaOrdenProductoServiceIt.html', 'facturaOrdenProductoServiceTest.html',
+      'facturaServiceIt.html', 'facturaServiceTest.html', 'ordenModelTest.html', 'ordenProductoModelTest.html',
+      'ordenProductoServiceIt.html', 'ordenProductoServiceTest.html', 'ordenServiceIt.html', 'ordenServiceTest.html',
+      'pagoDetalleModelTest.html', 'pagoDetalleServiceIt.html', 'pagoDetalleServiceTest.html', 'pagoModelTest.html',
+      'pagoServiceIt.html', 'pagoServiceTest.html', 'productoCaracteristicaModelTest.html', 'productoCaracteristicaServiceIt.html',
+      'productoCaracteristicaServiceTest.html', 'productoModelTest.html', 'productoServiceIt.html', 'productoServiceTest.html',
+      'productoTipoProductoModelTest.html', 'productoTipoProductoServiceIt.html', 'productoTipoProductoServiceTest.html',
+      'rolModelTest.html', 'rolServiceIt.html', 'rolServiceTest.html',
+      'testComponentes/barraInferiorTest.html', 'testComponentes/botonCircularTest.html', 'testComponentes/botonFlotanteTest.html',
+      'testComponentes/botonRedondeadoTest.html', 'testComponentes/cambioEstadoTest.html', 'testComponentes/carruselFiltrosTest.html',
+      'testComponentes/checkboxTest.html', 'testComponentes/contenidoDinamicoTest.html', 'testComponentes/itemCarritoTest.html',
+      'testComponentes/itemTest.html', 'testComponentes/listaItemsTest.html', 'testComponentes/menuFlotanteTest.html',
+      'testComponentes/notificacionTest.html', 'testComponentes/panelTest.html', 'testComponentes/popupTest.html',
+      'testComponentes/rejillaTarjetasTest.html', 'testComponentes/routerTest.html', 'testComponentes/spinnerNumericoTest.html',
+      'testComponentes/tarjetaTest.html', 'testComponentes/textTest.html', 'testServiciosModelos.html',
+      'tipoCaracteristicaModelTest.html', 'tipoCaracteristicaServiceIt.html', 'tipoCaracteristicaServiceTest.html',
+      'tipoDescuentoModelTest.html', 'tipoDescuentoServiceIt.html', 'tipoDescuentoServiceTest.html',
+      'tipoProductoModelTest.html', 'tipoProductoServiceIt.html', 'tipoProductoServiceTest.html',
+    ];
+
+    const paginasDeGrupo = {
+      unitarias: paginas.filter((pagina) => pagina.endsWith('ServiceTest.html')),
+      integracion: paginas.filter((pagina) => pagina.endsWith('ServiceIt.html')),
+      modelos: paginas.filter((pagina) => pagina.endsWith('ModelTest.html')),
+      componentes: paginas.filter((pagina) => pagina.startsWith('testComponentes/')),
+      consolidada: ['testServiciosModelos.html'],
+      todas: paginas,
+    };
+    const contenedor = document.querySelector('#pruebas');
+    const estado = document.querySelector('#estado');
+
+    document.querySelector('#ejecutar').addEventListener('click', () => {
+      const grupo = document.querySelector('#grupo').value;
+      const seleccion = paginasDeGrupo[grupo];
+      contenedor.replaceChildren();
+      estado.textContent = `Cargando ${seleccion.length} páginas de prueba…`;
+      const fragmento = document.createDocumentFragment();
+      for (const pagina of seleccion) {
+        const tarjeta = document.createElement('section');
+        tarjeta.className = 'prueba';
+        const titulo = document.createElement('h2');
+        titulo.textContent = pagina;
+        const marco = document.createElement('iframe');
+        marco.title = `Resultados: ${pagina}`;
+        marco.loading = 'eager';
+        marco.src = `./${pagina}`;
+        tarjeta.append(titulo, marco);
+        fragmento.append(tarjeta);
+      }
+      contenedor.append(fragmento);
+      estado.textContent = `${seleccion.length} páginas ejecutándose en paralelo.`;
+    });
+
+    document.querySelector('#limpiar').addEventListener('click', () => {
+      contenedor.replaceChildren();
+      contenedor.innerHTML = '<p class="vacio">Las pruebas aparecerán aquí al ejecutar un grupo.</p>';
+      estado.textContent = 'Resultados limpiados.';
+    });
+  </script>
+</body>
+</html>

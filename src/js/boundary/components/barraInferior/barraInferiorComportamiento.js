@@ -20,7 +20,7 @@ class CustomBarraInferior extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomBarraInferior._template) {
             CustomBarraInferior._template = fetch('./js/boundary/components/barraInferior/barraInferiorPlantilla.html')
                 .then((response) => {
@@ -37,7 +37,7 @@ class CustomBarraInferior extends HTMLElement {
         return CustomBarraInferior._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -49,9 +49,10 @@ class CustomBarraInferior extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {

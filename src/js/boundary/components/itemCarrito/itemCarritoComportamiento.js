@@ -19,7 +19,7 @@ class ItemCarrito extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!ItemCarrito._template) {
             ItemCarrito._template = fetch('./js/boundary/components/itemCarrito/itemCarritoPlantilla.html')
                 .then((response) => {
@@ -32,7 +32,7 @@ class ItemCarrito extends HTMLElement {
         return ItemCarrito._template;
     }
 
-    async #render() {
+    #render() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -46,7 +46,7 @@ class ItemCarrito extends HTMLElement {
                 this.#eliminar.addEventListener('click', () => this.dispatchEvent(new CustomEvent('eliminar-item', { detail: { id: this.getAttribute('id') }, bubbles: true, composed: true })));
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         const uid = this.getAttribute('uid') || this.getAttribute('id') || '';
         const imagenPorDefecto = './assets/images/categorias/test.png';
         this.#imagen.onerror = function() {
@@ -61,6 +61,7 @@ class ItemCarrito extends HTMLElement {
         this.#descripcion.textContent = this.getAttribute('descripcion') || '';
         this.#precio.textContent = this.getAttribute('precio') || '';
         this.#cantidad.setAttribute('value', this.getAttribute('cantidad') || '1');
+        });
     }
 
     connectedCallback() { this.#render().catch((error) => console.error(error)); }

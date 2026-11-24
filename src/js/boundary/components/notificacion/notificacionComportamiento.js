@@ -23,7 +23,7 @@ class CustomNotificacion extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomNotificacion._template) {
             CustomNotificacion._template = fetch('./js/boundary/components/notificacion/notificacionPlantilla.html')
                 .then((response) => {
@@ -40,7 +40,7 @@ class CustomNotificacion extends HTMLElement {
         return CustomNotificacion._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -52,9 +52,10 @@ class CustomNotificacion extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {

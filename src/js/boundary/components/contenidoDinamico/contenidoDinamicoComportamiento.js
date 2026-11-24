@@ -14,7 +14,7 @@ class ContenidoDinamico extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!ContenidoDinamico._template) {
             ContenidoDinamico._template = fetch('./js/boundary/components/contenidoDinamico/contenidoDinamicoPlantilla.html')
                 .then((response) => {
@@ -31,14 +31,15 @@ class ContenidoDinamico extends HTMLElement {
         return ContenidoDinamico._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
+        });
     }
 
     connectedCallback() {

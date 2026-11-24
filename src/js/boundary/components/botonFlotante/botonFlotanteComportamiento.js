@@ -18,7 +18,7 @@ class CustomBotonFlotante extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomBotonFlotante._template) {
             CustomBotonFlotante._template = fetch('./js/boundary/components/botonFlotante/botonFlotantePlantilla.html')
                 .then((response) => {
@@ -35,7 +35,7 @@ class CustomBotonFlotante extends HTMLElement {
         return CustomBotonFlotante._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -53,9 +53,10 @@ class CustomBotonFlotante extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     connectedCallback() {

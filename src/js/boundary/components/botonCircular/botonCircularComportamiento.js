@@ -20,7 +20,7 @@ class CustomBotonCircular extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomBotonCircular._template) {
             CustomBotonCircular._template = fetch('./js/boundary/components/botonCircular/botonCircularPlantilla.html')
                 .then((response) => {
@@ -37,7 +37,7 @@ class CustomBotonCircular extends HTMLElement {
         return CustomBotonCircular._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -57,9 +57,10 @@ class CustomBotonCircular extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     connectedCallback() {

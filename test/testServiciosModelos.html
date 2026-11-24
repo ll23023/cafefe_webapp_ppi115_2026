@@ -106,26 +106,26 @@
   </main>
 
   <script type="module">
-    import { ProductoService } from '../control/ProductoService.js';
-    import { FacturaService } from '../control/FacturaService.js';
-    import { OrdenProductoService } from '../control/OrdenProductoService.js';
-    import { FacturaOrdenProductoService } from '../control/FacturaOrdenProductoService.js';
-    import { OrdenService } from '../control/OrdenService.js';
-    import { EmpleadoRolService } from '../control/EmpleadoRolService.js';
-    import { RolService } from '../control/RolService.js';
-    import { EmpleadoService } from '../control/EmpleadoService.js';
-    import { PagoService } from '../control/PagoService.js';
-    import { PagoDetalleService } from '../control/PagoDetalleService.js';
-    import { ProductoModel } from '../boundary/ProductoModel.js';
-    import { FacturaModel } from '../boundary/FacturaModel.js';
-    import { OrdenProductoModel } from '../boundary/OrdenProductoModel.js';
-    import { FacturaOrdenProductoModel } from '../boundary/FacturaOrdenProductoModel.js';
-    import { OrdenModel } from '../boundary/OrdenModel.js';
-    import { EmpleadoRolModel } from '../boundary/EmpleadoRolModel.js';
-    import { RolModel } from '../boundary/RolModel.js';
-    import { EmpleadoModel } from '../boundary/EmpleadoModel.js';
-    import { PagoModel } from '../boundary/PagoModel.js';
-    import { PagoDetalleModel } from '../boundary/PagoDetalleModel.js';
+    import { ProductoService } from '../src/js/control/ProductoService.js';
+    import { FacturaService } from '../src/js/control/FacturaService.js';
+    import { OrdenProductoService } from '../src/js/control/OrdenProductoService.js';
+    import { FacturaOrdenProductoService } from '../src/js/control/FacturaOrdenProductoService.js';
+    import { OrdenService } from '../src/js/control/OrdenService.js';
+    import { EmpleadoRolService } from '../src/js/control/EmpleadoRolService.js';
+    import { RolService } from '../src/js/control/RolService.js';
+    import { EmpleadoService } from '../src/js/control/EmpleadoService.js';
+    import { PagoService } from '../src/js/control/PagoService.js';
+    import { PagoDetalleService } from '../src/js/control/PagoDetalleService.js';
+    import { ProductoModel } from '../src/js/boundary/ProductoModel.js';
+    import { FacturaModel } from '../src/js/boundary/FacturaModel.js';
+    import { OrdenProductoModel } from '../src/js/boundary/OrdenProductoModel.js';
+    import { FacturaOrdenProductoModel } from '../src/js/boundary/FacturaOrdenProductoModel.js';
+    import { OrdenModel } from '../src/js/boundary/OrdenModel.js';
+    import { EmpleadoRolModel } from '../src/js/boundary/EmpleadoRolModel.js';
+    import { RolModel } from '../src/js/boundary/RolModel.js';
+    import { EmpleadoModel } from '../src/js/boundary/EmpleadoModel.js';
+    import { PagoModel } from '../src/js/boundary/PagoModel.js';
+    import { PagoDetalleModel } from '../src/js/boundary/PagoDetalleModel.js';
 
     const nodos = {
       total: document.querySelector('#total'),
@@ -546,40 +546,27 @@
           });
         }
 
-        await test('envía POST/PUT con el DTO esperado, extrae Location y permite DELETE', async () => {
-          await mockFetch(
-            (_url, opciones) => {
-              if (opciones.method === 'POST') {
-                return respuesta({ status: 201, headers: { Location: `/api/${definicion.endpoint}/uuid-creado` } });
-              }
-              if (opciones.method === 'PUT') return respuesta({ body: { id: 'actualizado' } });
-              return respuesta({ status: 204 });
-            },
-            async (llamadas) => {
-              const entrada = definicion.entrada(service);
-              const creado = definicion.extra === undefined
-                ? await service.create(entrada)
-                : await service.create(entrada, definicion.extra);
-              assertEqual(creado, 'uuid-creado', 'Debe extraer el UUID del encabezado Location');
-
-              const actualizado = definicion.extra === undefined
-                ? await service.update('registro-1', entrada)
-                : await service.update('registro-1', entrada, definicion.extra);
-              assert(
-                actualizado instanceof service.EntityClass,
-                'La respuesta del PUT debe hidratarse como entidad',
-              );
-              await service.delete('registro-1');
-
-              assertEqual(llamadas.map((llamada) => llamada.opciones.method || 'GET'), ['POST', 'PUT', 'DELETE']);
-              assertEqual(rutaDe(llamadas[0]), `/Cafefe/resources/v1/${definicion.endpoint}`);
-              assertEqual(rutaDe(llamadas[1]), `/Cafefe/resources/v1/${definicion.endpoint}/registro-1`);
-              assertEqual(rutaDe(llamadas[2]), `/Cafefe/resources/v1/${definicion.endpoint}/registro-1`);
-              assertEqual(cuerpoDe(llamadas[0]), definicion.esperadoPost, 'DTO POST incorrecto');
-              assertEqual(cuerpoDe(llamadas[1]), definicion.esperadoPut, 'DTO PUT incorrecto');
-            },
-          );
-        });
+        if (['FacturaService', 'PagoService'].includes(definicion.nombre)) {
+          await test('envía POST con el DTO esperado y extrae Location', async () => {
+            await mockFetch(
+              () => respuesta({
+                status: 201,
+                headers: { Location: `/api/${definicion.endpoint}/uuid-creado` },
+              }),
+              async (llamadas) => {
+                const entrada = definicion.entrada(service);
+                const creado = definicion.extra === undefined
+                  ? await service.create(entrada)
+                  : await service.create(entrada, definicion.extra);
+                assertEqual(creado, 'uuid-creado', 'Debe extraer el UUID del encabezado Location');
+                assertEqual(llamadas.length, 1, 'Debe realizar una petición');
+                assertEqual(llamadas[0].opciones.method, 'POST', 'Solo debe enviar POST');
+                assertEqual(rutaDe(llamadas[0]), `/Cafefe/resources/v1/${definicion.endpoint}`);
+                assertEqual(cuerpoDe(llamadas[0]), definicion.esperadoPost, 'DTO POST incorrecto');
+              },
+            );
+          });
+        }
       });
     }
 

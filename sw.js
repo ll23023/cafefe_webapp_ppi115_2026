@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'cafefe-';
-const STATIC_CACHE = `${CACHE_PREFIX}static-v2`;
+const STATIC_CACHE = `${CACHE_PREFIX}static-v3`;
 const API_CACHE = `${CACHE_PREFIX}api-v1`;
 const API_ORIGIN = 'http://localhost:9080';
 const API_PREFIX = '/Cafefe/resources/v1/';

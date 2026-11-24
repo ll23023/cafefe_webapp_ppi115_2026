@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../config.js';
+
 /**
  * Error producido por una respuesta HTTP no exitosa o por una falla de red.
  * El estado `0` indica que el servidor no pudo ser contactado.
@@ -34,10 +36,9 @@ class ValidacionError extends Error {
  */
 class DefaultDAO {
   /**
-   * Dirección base del API: servidor Liberty + contexto de la aplicación + `@ApplicationPath`.
-   * Debe ser absoluta mientras el frontend se sirva desde otro puerto (CORS).
+  * Dirección base compartida con ApiClient; usa URL local en desarrollo y proxy same-origin en Docker.
    */
-  static BASE_URL = 'http://localhost:9080/Cafefe/resources/v1';
+  static BASE_URL = API_BASE_URL;
   /**
    * Nombres de los encabezados de respuesta del backend, tomados del enum `ResponseHeaders`
    * (`TOTAL_RECORDS`/`TOTAL_REGISTROS` comparten el valor `Total-Records`).

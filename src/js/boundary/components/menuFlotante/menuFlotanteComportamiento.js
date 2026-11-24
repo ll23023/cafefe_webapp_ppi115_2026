@@ -20,7 +20,7 @@ class CustomMenuFlotante extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomMenuFlotante._template) {
             CustomMenuFlotante._template = fetch('./js/boundary/components/menuFlotante/menuFlotantePlantilla.html')
                 .then((response) => {
@@ -37,7 +37,7 @@ class CustomMenuFlotante extends HTMLElement {
         return CustomMenuFlotante._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -51,9 +51,10 @@ class CustomMenuFlotante extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     attributeChangedCallback(nombre, valorAnterior, valorNuevo) {

@@ -40,7 +40,7 @@ class FiltroCircular extends HTMLElement {
     }
 
     // Se define el método privado que obtiene la plantilla del componente.
-    async _getTemplate() {
+    _getTemplate() {
 
         // Verifica si la plantilla ya ha sido cargada, si no, la carga desde el archivo HTML.
         if (!FiltroCircular._template) {
@@ -69,8 +69,8 @@ class FiltroCircular extends HTMLElement {
     }
 
     // Se define el método privado que renderiza el componente en el DOM.
-    async _renderElement() {
-        const template = await this._getTemplate();
+    _renderElement() {
+        return this._getTemplate().then((template) => {
 
         // Verifficamos si la plantilla ya ha sido clonada, si no, la clonamos y la agregamos al shadow DOM del componente.
         if (!this._isCloned) {
@@ -109,6 +109,7 @@ class FiltroCircular extends HTMLElement {
             ? `./assets/icons/${encodeURIComponent(this._filtroId)}.png`
             : imagenPorDefecto;
         imagen.alt = this.getAttribute('nombre') || this._filtroId || 'Categoria';
+        });
     }
 
     deseleccionar() {

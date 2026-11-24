@@ -20,7 +20,7 @@ class SpinnerNumerico extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!SpinnerNumerico._template) {
             SpinnerNumerico._template = fetch('./js/boundary/components/spinnerNumerico/spinnerNumericoPlantilla.html')
                 .then((response) => {
@@ -37,7 +37,7 @@ class SpinnerNumerico extends HTMLElement {
         return SpinnerNumerico._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -57,12 +57,13 @@ class SpinnerNumerico extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         if (!this.#inicializado) {
             this.#input.value = this.getAttribute('value') ?? this.getAttribute('min') ?? '0';
             this.#inicializado = true;
         }
         this.#render();
+        });
     }
 
     connectedCallback() {

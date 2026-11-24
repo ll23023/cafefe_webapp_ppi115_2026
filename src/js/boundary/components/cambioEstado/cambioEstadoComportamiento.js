@@ -17,7 +17,7 @@ class CambioEstado extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CambioEstado._template) {
             CambioEstado._template = fetch('./js/boundary/components/cambioEstado/cambioEstadoPlantilla.html')
                 .then((response) => {
@@ -30,7 +30,7 @@ class CambioEstado extends HTMLElement {
         return CambioEstado._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -40,13 +40,14 @@ class CambioEstado extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         const estado = this.getAttribute('estado') || 'pendiente';
         this._checkbox.checked = ['listo', 'activo'].includes(estado);
         this._texto.textContent = this._checkbox.checked ? 'Listo' : 'Pendiente';
         this._texto.dataset.estado = this._checkbox.checked ? 'listo' : 'pendiente';
         this._checkbox.disabled = this.hasAttribute('disabled') ||
             (this.getAttribute('modo') || 'toggle') === 'oneChange' && this._checkbox.checked;
+        });
     }
 
     _cambiarEstado(evento) {

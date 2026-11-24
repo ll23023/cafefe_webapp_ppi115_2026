@@ -2,17 +2,18 @@
 <html lang="es">
 
 <head>
+    <base href="/src/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test visual de PopUp</title>
-    <link rel="stylesheet" href="/assets/styles/variables.css">
+    <link rel="stylesheet" href="/src/assets/styles/variables.css">
 </head>
 
 <body>
     <h1>Popup</h1><app-popup tipo="advertencia" titulo="Confirmar acción" descripcion="¿Deseas continuar?"
         alineacion="derecha"></app-popup><button type="button"
         onclick="document.querySelector('app-popup').show()">Abrir popup</button>
-    <script type="module" src="/boundary/main.js"></script>
+    <script type="module" src="/src/js/boundary/main.js"></script>
 </body>
 
 </html>

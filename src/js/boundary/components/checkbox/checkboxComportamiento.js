@@ -22,7 +22,7 @@ class CustomCheckbox extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomCheckbox._template) {
             CustomCheckbox._template = fetch('./js/boundary/components/checkbox/checkboxPlantilla.html')
                 .then((response) => {
@@ -39,7 +39,7 @@ class CustomCheckbox extends HTMLElement {
         return CustomCheckbox._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -61,13 +61,14 @@ class CustomCheckbox extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         if (!this.#inicializado) {
             this.#input.checked = this.hasAttribute('checked');
             this.#input.indeterminate = this.hasAttribute('indeterminate');
             this.#inicializado = true;
         }
         this.#render();
+        });
     }
 
     connectedCallback() {

@@ -20,7 +20,7 @@ class PopUp extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!PopUp._template) {
             PopUp._template = fetch('./js/boundary/components/popup/popUpPlantilla.html')
                 .then((response) => {
@@ -33,7 +33,7 @@ class PopUp extends HTMLElement {
         return PopUp._template;
     }
 
-    async #render() {
+    #render() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -49,7 +49,7 @@ class PopUp extends HTMLElement {
                 this.#cancelar.addEventListener('click', () => this.close('cancelar'));
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#dialog.dataset.tipo = this.getAttribute('tipo') || 'mensaje';
         this.#titulo.textContent = this.getAttribute('titulo') || '';
         this.#descripcion.textContent = this.getAttribute('descripcion') || '';
@@ -57,6 +57,7 @@ class PopUp extends HTMLElement {
         this.#cancelar.textContent = this.getAttribute('texto-cancelar') || 'Cancelar';
         this.#acciones.dataset.alineacion = this.getAttribute('alineacion') || 'derecha';
         this.#acciones.hidden = this.getAttribute('variante') === 'vacio';
+        });
     }
 
     show() { this.#render().then(() => this.#dialog.showModal()).catch((error) => console.error(error)); }

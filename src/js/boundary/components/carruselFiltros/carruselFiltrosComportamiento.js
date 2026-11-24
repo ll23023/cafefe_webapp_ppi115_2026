@@ -20,7 +20,7 @@ class CarruselFiltros extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CarruselFiltros._template) {
             CarruselFiltros._template = fetch('./js/boundary/components/carruselFiltros/carruselFiltrosPlantilla.html')
                 .then((response) => {
@@ -33,7 +33,7 @@ class CarruselFiltros extends HTMLElement {
         return CarruselFiltros._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -56,9 +56,10 @@ class CarruselFiltros extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this._renderFiltros();
         this._actualizarBotones();
+        });
     }
 
     _renderFiltros() {

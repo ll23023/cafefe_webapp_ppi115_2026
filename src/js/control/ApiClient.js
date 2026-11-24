@@ -3,7 +3,9 @@
  * @author Mil
  */
 
-export const API_BASE_URL = 'http://localhost:9080/Cafefe/resources/v1';
+import { API_BASE_URL } from '../config.js';
+
+export { API_BASE_URL };
 
 export const ResponseHeaders = Object.freeze({
   PROCESS_ERROR: 'Process-Error',

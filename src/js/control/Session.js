@@ -1,7 +1,6 @@
 import { EmpleadoService } from './EmpleadoService.js';
 import { EmpleadoRolService } from './EmpleadoRolService.js';
 import { CajaService } from './CajaService.js';
-import { MOCK_EMPLOYEES } from './mockEmployees.js';
 
 const CLAVE = 'cafefe-session';
 const normalizar = (valor) => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
@@ -39,34 +38,35 @@ export class Session {
 
     static limpiar() { sessionStorage.removeItem(CLAVE); }
 
+    static async verificarConexion() {
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+            throw new Error('No hay conexión a internet.');
+        }
+        await this.#empleadoService.findRange(0, 1);
+        return true;
+    }
+
     static async iniciar(usuario, contrasena = '') {
         const nombre = String(usuario ?? '').trim();
         const password = String(contrasena ?? '').trim();
         if (!nombre) throw new Error('Escribe tu nombre para continuar.');
 
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+            throw new Error('No hay conexión a internet.');
+        }
+
+        const empleados = (await this.#empleadoService.findRange(0, 50)).registros;
+
         if (!password) {
             return this.guardar({ tipo: 'cliente', nombre, empleado: null, carrito: [], ordenes: [] });
         }
 
-        let empleados = [];
-        try {
-            empleados = (await this.#empleadoService.findRange(0, 50)).registros;
-        } catch (error) {
-            empleados = MOCK_EMPLOYEES;
-        }
-        if (!empleados.length) empleados = MOCK_EMPLOYEES;
-
         let empleado = empleados.find((registro) => normalizar(nombreEmpleado(registro)) === normalizar(nombre) || normalizar(registro.nombre) === normalizar(nombre));
-        if (!empleado) empleado = MOCK_EMPLOYEES.find((registro) => normalizar(nombreEmpleado(registro)) === normalizar(nombre));
         if (!empleado || password !== String(empleado.idEmpleado)) throw new Error('Usuario o contraseña incorrectos.');
 
         if (!empleado.empleadoRolList?.length && empleado.idEmpleado) {
-            try {
-                const relaciones = (await this.#empleadoRolService.findRange(0, 50)).registros;
-                empleado.empleadoRolList = relaciones.filter((relacion) => relacion?.idEmpleado?.idEmpleado === empleado.idEmpleado);
-            } catch {
-                empleado.empleadoRolList = [];
-            }
+            const relaciones = (await this.#empleadoRolService.findRange(0, 50)).registros;
+            empleado.empleadoRolList = relaciones.filter((relacion) => relacion?.idEmpleado?.idEmpleado === empleado.idEmpleado);
         }
         const roles = nombreRol(empleado);
         const rol = roles.map(rolCanonico).find(Boolean);

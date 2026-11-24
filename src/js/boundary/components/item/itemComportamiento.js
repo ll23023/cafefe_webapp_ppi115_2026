@@ -19,7 +19,7 @@ class Item extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!Item._template) {
             Item._template = fetch('./js/boundary/components/item/itemPlantilla.html')
                 .then((response) => {
@@ -32,7 +32,7 @@ class Item extends HTMLElement {
         return Item._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -43,12 +43,13 @@ class Item extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this._titulo.textContent = this.getAttribute('titulo') || '';
         this._descripcion.textContent = this.getAttribute('descripcion') || '';
         this._precio.textContent = this.getAttribute('precio') || '';
         this._imagen.src = this.getAttribute('imagen') || '';
         this._imagen.alt = this.getAttribute('titulo') || '';
+        });
     }
 
     connectedCallback() {

@@ -22,7 +22,7 @@ class CustomTarjeta extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomTarjeta._template) {
             CustomTarjeta._template = fetch('./js/boundary/components/tarjeta/tarjetaPlantilla.html')
                 .then((response) => {
@@ -39,7 +39,7 @@ class CustomTarjeta extends HTMLElement {
         return CustomTarjeta._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -62,8 +62,9 @@ class CustomTarjeta extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#render();
+        });
     }
 
     connectedCallback() {

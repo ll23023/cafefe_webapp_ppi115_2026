@@ -95,6 +95,33 @@ button {
     color: #ffffff;
 }
 
+.login-popup {
+    width: min(90vw, 32rem);
+    padding: 1.5rem;
+    color: var(--barra);
+    background: var(--fondo-pagina-input);
+    border: 0;
+    border-radius: var(--radio-borde);
+}
+
+.login-popup::backdrop {
+    background: rgb(0 0 0 / 55%);
+}
+
+.login-popup h2 {
+    margin-top: 0;
+}
+
+.login-popup button {
+    display: block;
+    margin-left: auto;
+    padding: 0.6rem 1rem;
+    color: var(--blanco-simple);
+    background: var(--barra);
+    border: 0;
+    border-radius: var(--radio-borde);
+}
+
 .login-form h1 {
     margin: 0;
 }

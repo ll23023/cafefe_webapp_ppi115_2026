@@ -60,5 +60,5 @@ async function registrarServiceWorker() {
 registrarServiceWorker().catch((error) => {
     console.error('No se pudo registrar el Service Worker; la aplicación seguirá en línea:', error);
 });
-iniciarAplicacion();
+if (document.querySelector('#app')) iniciarAplicacion();
 

@@ -18,7 +18,7 @@ class CustomBotonRedondeado extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    async _getTemplate() {
+    _getTemplate() {
         if (!CustomBotonRedondeado._template) {
             CustomBotonRedondeado._template = fetch('./js/boundary/components/botonRedondeado/botonRedondeadoPlantilla.html')
                 .then((response) => {
@@ -35,7 +35,7 @@ class CustomBotonRedondeado extends HTMLElement {
         return CustomBotonRedondeado._template;
     }
 
-    async _renderElement() {
+    _renderElement() {
         if (!this._renderPromise) {
             this._renderPromise = this._getTemplate().then((template) => {
                 this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -53,9 +53,10 @@ class CustomBotonRedondeado extends HTMLElement {
                 this._isRendered = true;
             });
         }
-        await this._renderPromise;
+        return this._renderPromise.then(() => {
         this.#adoptarPropiedades();
         this.#render();
+        });
     }
 
     connectedCallback() {
